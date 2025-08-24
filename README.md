@@ -52,18 +52,23 @@ Google Sheet cần có các cột sau (theo thứ tự):
 |-----|-------|
 | A | Tên phường xã |
 | B | Địa bàn VNPT |
-| C | Biên lai điện tử |
-| D | Kiosk AI |
-| E | Kiosk bắt số |
-| F | Hội nghị TT |
-| G | Hệ thống Wifi |
-| H | Camera HCC |
-| I | Camera xã phường |
-| J | Kênh TSL CD |
-| K | AI cho CCVC |
-| L | Smart IR |
-| M | Firewall S-Gate |
-| N | VNPT Money |
+| C | Nhân viên khảo sát |
+| D | Số điện thoại nhân viên |
+| E | Người đầu mối |
+| F | Chức vụ |
+| G | Số điện thoại đầu mối |
+| H | Biên lai điện tử |
+| I | Kiosk AI |
+| J | Kiosk bắt số |
+| K | Hội nghị TT |
+| L | Hệ thống Wifi |
+| M | Camera HCC |
+| N | Camera xã phường |
+| O | Kênh TSL CD |
+| P | AI cho CCVC |
+| Q | Smart IR |
+| R | Firewall S-Gate |
+| S | VNPT Money |
 
 **Lưu ý:** 
 - Các thông tin chi tiết như số lượng sẽ được ghi chú trong cột tương ứng (VD: "Có (5 cái)")

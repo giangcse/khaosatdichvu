@@ -173,6 +173,47 @@
                 </div>
             </div>
 
+            <!-- Question: Thông tin nhân viên khảo sát -->
+            <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
+                <p class="font-semibold text-gray-800 mb-4">Thông tin nhân viên khảo sát</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="nhan_vien_khao_sat" class="block text-sm font-medium text-gray-700">Họ và tên:</label>
+                        <input type="text" id="nhan_vien_khao_sat" name="nhan_vien_khao_sat" class="form-input mt-1 block w-full"
+                            placeholder="Nhập họ và tên nhân viên khảo sát" required>
+                    </div>
+                    <div>
+                        <label for="so_dien_thoai_nv" class="block text-sm font-medium text-gray-700">Số điện thoại:</label>
+                        <input type="tel" id="so_dien_thoai_nv" name="so_dien_thoai_nv" class="form-input mt-1 block w-full"
+                            placeholder="Nhập số điện thoại" pattern="[0-9]{10,11}" title="Số điện thoại phải có 10-11 chữ số"
+                            required>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Question: Thông tin người đầu mối xã phường -->
+            <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
+                <p class="font-semibold text-gray-800 mb-4">Thông tin người đầu mối xã phường</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="nguoi_dau_moi" class="block text-sm font-medium text-gray-700">Họ và tên:</label>
+                        <input type="text" id="nguoi_dau_moi" name="nguoi_dau_moi" class="form-input mt-1 block w-full"
+                            placeholder="Nhập họ và tên người đầu mối" required>
+                    </div>
+                    <div>
+                        <label for="chuc_vu" class="block text-sm font-medium text-gray-700">Chức vụ:</label>
+                        <input type="text" id="chuc_vu" name="chuc_vu" class="form-input mt-1 block w-full"
+                            placeholder="Nhập chức vụ" required>
+                    </div>
+                    <div>
+                        <label for="so_dien_thoai_dm" class="block text-sm font-medium text-gray-700">Số điện thoại:</label>
+                        <input type="tel" id="so_dien_thoai_dm" name="so_dien_thoai_dm" class="form-input mt-1 block w-full"
+                            placeholder="Nhập số điện thoại" pattern="[0-9]{10,11}" title="Số điện thoại phải có 10-11 chữ số"
+                            required>
+                    </div>
+                </div>
+            </div>
+
             <!-- Question: Biên lai điện tử -->
             <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
                 <p class="font-semibold text-gray-800 mb-4">1. Biên lai điện tử</p>
@@ -732,6 +773,8 @@
                         let summaryHtml = '<div class="text-sm space-y-2">';
                         summaryHtml += `<p><span class="font-medium">Địa bàn:</span> ${data.diaban}</p>`;
                         summaryHtml += `<p><span class="font-medium">Phường/Xã:</span> ${data.xaphuong}</p>`;
+                        summaryHtml += `<p><span class="font-medium">Nhân viên khảo sát:</span> ${data.nhan_vien_khao_sat} (${data.so_dien_thoai_nv})</p>`;
+                        summaryHtml += `<p><span class="font-medium">Người đầu mối:</span> ${data.nguoi_dau_moi} - ${data.chuc_vu} (${data.so_dien_thoai_dm})</p>`;
 
                         const services = {
                             'dich_vu_1': 'Biên lai điện tử',

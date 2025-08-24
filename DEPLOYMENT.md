@@ -47,8 +47,15 @@ sudo apt install certbot python3-certbot-nginx -y
 ├── wsgi.py              # WSGI entry point
 ├── gunicorn.conf.py     # Gunicorn config
 ├── requirements.txt     # Dependencies
+├── requirements_production.txt  # Production dependencies
 ├── credentials.json     # Google API credentials
-└── xaphuong.json        # Data file
+├── xaphuong.json        # Data file
+├── production_config.py # Production configuration
+├── nginx.conf           # Nginx configuration
+├── gunicorn.conf.py     # Gunicorn configuration
+├── deploy.sh            # Deployment script
+└── systemd/             # Systemd service files
+    └── khaosat.service
 ```
 
 ## 🔐 Bảo mật

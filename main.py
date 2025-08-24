@@ -92,6 +92,11 @@ def submit_to_google_sheet(data):
         row_data = [
             data.get("xaphuong", ""),  # Tên phường xã
             data.get("diaban", ""),  # Địa bàn VNPT
+            data.get("nhan_vien_khao_sat", ""),  # Nhân viên khảo sát
+            data.get("so_dien_thoai_nv", ""),  # Số điện thoại nhân viên
+            data.get("nguoi_dau_moi", ""),  # Người đầu mối
+            data.get("chuc_vu", ""),  # Chức vụ
+            data.get("so_dien_thoai_dm", ""),  # Số điện thoại đầu mối
             format_service_value(
                 data.get("dich_vu_1", ""), data.get("so_luong_1", "")
             ),  # Biên lai điện tử
