@@ -1,0 +1,498 @@
+[
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Xã Cái Nhum"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Xã Tân Long Hội"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Xã Nhơn Phú"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Xã Bình Phước"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Xã An Bình"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Xã Long Hồ"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Xã Phú Quới"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Phường Thanh Đức"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Phường Long Châu"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Phường Phước Hậu"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Phường Tân Hạnh"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Phường Tân Ngãi"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Xã Quới Thiện"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Xã Trung Thành"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Xã Trung Ngãi"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Xã Quới An"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Xã Trung Hiệp"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Xã Hiếu Phụng"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Xã Hiếu Thành"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Xã Lục Sỹ Thành"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Xã Trà Ôn"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Xã Trà Côn"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Xã Vĩnh Xuân"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Xã Hòa Bình"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Xã Hòa Hiệp"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Xã Tam Bình"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Xã Ngãi Tứ"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Xã Song Phú"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Xã Cái Ngang"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Xã Tân Quới"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Xã Tân Lược"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Xã Mỹ Thuận"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Phường Bình Minh"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Phường Cái Vồn"
+  },
+  {
+    "diaban": "Vĩnh Long",
+    "xaphuong": "Phường Đông Thành"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Phường Long Đức"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Phường Trà Vinh"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Phường Nguyệt Hóa"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Phường Hòa Thuận"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã An Trường"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Tân An"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Càng Long"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Nhị Long"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Bình Phú"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Song Lộc"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Châu Thành"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Hưng Mỹ"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Cầu Kè"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Phong Thạnh"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã An Phú Tân"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Tam Ngãi"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Tân Hòa"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Hùng Hòa"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Tiểu Cần"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Tập Ngãi"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Mỹ Long"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Vinh Kim"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Cầu Ngang"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Nhị Trường"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Hiệp Mỹ"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Lưu Nghiệp Anh"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Đại An"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Hàm Giang"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Trà Cú"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Long Hiệp"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Tập Sơn"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Phường Duyên Hải"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Phường Trường Long Hòa"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Long Hữu"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Long Thành"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Đôn Châu"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Ngũ Lạc"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Hòa Minh"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Long Hòa"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Đông Hải"
+  },
+  {
+    "diaban": "Trà Vinh",
+    "xaphuong": "Xã Long Vĩnh"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Phường An Hội"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Phường Phú Khương"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Phường Bến Tre"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Phường Sơn Đông"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Phường Phú Tân"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Phú Túc"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Giao Long"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Tiên Thủy"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Tân Phú"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Hưng Nhượng"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Giồng Trôm"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Tân Hào"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Phước Long"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Lương Phú"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Châu Hòa"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Lương Hòa"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Tân Thủy"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Bảo Thạnh"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Ba Tri"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Tân Xuân"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Mỹ Chánh Hòa"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã An Ngãi Trung"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã An Hiệp"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Thới Thuận"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Thạnh Phước"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Bình Đại"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Thạnh Trị"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Lộc Thuận"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Châu Hưng"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Phú Thuận"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Phú Phụng"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Chợ Lách"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Vĩnh Thành"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Thạnh Phong"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Thạnh Hải"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã An Qui"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Thạnh Phú"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Quới Điền"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Đại Điền"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Hương Mỹ"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã An Định"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Thành Thới"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Mỏ Cày"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Đồng Khởi"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Nhuận Phú Tân"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Tân Thành Bình"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Phước Mỹ Trung"
+  },
+  {
+    "diaban": "Bến Tre",
+    "xaphuong": "Xã Hưng Khánh Trung"
+  }
+]

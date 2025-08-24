@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khảo sát dịch vụ</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Thêm thư viện jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Thêm CSS của Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- Thêm JS của Select2 -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        /* Custom message box for submission confirmation */
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #ffffff;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            max-width: 90%;
+            width: 500px;
+            z-index: 100;
+            display: none;
+        }
+        .message-box h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .message-box p {
+            margin-bottom: 0.5rem;
+        }
+        .message-box button {
+            display: block;
+            width: 100%;
+            margin-top: 1.5rem;
+            background-color: #4f46e5;
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        .message-box button:hover {
+            background-color: #4338ca;
+        }
+        .message-box-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 90;
+            display: none;
+        }
+
+        /* Improved styling for inputs and selects */
+        .form-input, .form-select {
+            padding: 0.75rem 1rem !important;
+            border-radius: 0.5rem !important;
+            border-color: #d1d5db !important;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+        }
+        .form-input:focus, .form-select:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5); /* indigo-500 with opacity */
+            border-color: #6366f1 !important; /* indigo-500 */
+        }
+
+        /* Select2 specific styling */
+        .select2-container .select2-selection--single {
+            height: 44px !important;
+            border-radius: 0.5rem !important;
+            border: 1px solid #d1d5db !important;
+            display: flex !important;
+            align-items: center !important;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+            background-color: #fff !important;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 42px !important;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #4b5563 !important;
+            line-height: 42px !important;
+            padding-left: 1rem !important;
+        }
+        .select2-container--default.select2-container--open .select2-selection--single {
+            border-color: #6366f1 !important;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5) !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4 relative">
+
+    <!-- Scroll Progress Bar -->
+    <div id="progressBar" class="fixed top-0 left-0 h-1.5 bg-indigo-500 z-50 transition-all duration-300"></div>
+
+    <!-- Main Container -->
+    <div class="bg-white p-6 md:p-12 rounded-2xl shadow-xl w-full max-w-2xl">
+        <h1 class="text-2xl md:text-3xl font-extrabold text-center mb-2 text-indigo-700">Khảo sát dịch vụ</h1>
+        <h2 class="text-lg md:text-xl font-bold text-center mb-6 text-indigo-500">cho Xã/Phường</h2>
+        <p class="text-center text-gray-600 text-sm mb-8">
+            Vui lòng điền đầy đủ và chính xác thông tin.
+        </p>
+
+        <!-- Survey Form -->
+        <form id="surveyForm" class="space-y-6">
+
+            <!-- Question: Địa bàn & Phường/Xã -->
+            <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
+                <p class="font-semibold text-gray-800 mb-4">Lựa chọn Địa bàn và Phường/Xã</p>
+                <div class="space-y-4">
+                    <div>
+                        <label for="diaban" class="block text-sm font-medium text-gray-700">Địa bàn:</label>
+                        <select id="diaban" name="diaban" class="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+                            <option value="">-- Chọn Địa bàn --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="xaphuong" class="block text-sm font-medium text-gray-700">Phường/Xã:</label>
+                        <!-- Thêm thẻ select cho Select2 -->
+                        <select id="xaphuong" name="xaphuong" class="mt-1 block w-full" required disabled>
+                            <option value="">-- Chọn Phường/Xã --</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Question: Biên lai điện tử -->
+            <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
+                <p class="font-semibold text-gray-800 mb-4">1. Biên lai điện tử</p>
+                <div class="flex flex-wrap gap-4 items-center">
+                    <label class="flex items-center text-gray-700 cursor-pointer">
+                        <input type="radio" name="dich_vu_1" value="Có" required class="form-radio h-5 w-5 text-indigo-600">
+                        <span class="ml-2">Có</span>
+                    </label>
+                    <label class="flex items-center text-gray-700 cursor-pointer">
+                        <input type="radio" name="dich_vu_1" value="Không" class="form-radio h-5 w-5 text-indigo-600">
+                        <span class="ml-2">Không</span>
+                    </label>
+                </div>
+                <div id="quantity_1" class="mt-4 hidden">
+                    <label for="so_luong_1" class="block text-sm font-medium text-gray-700">Số lượng:</label>
+                    <input type="number" id="so_luong_1" name="so_luong_1" class="form-input mt-1 block w-full" placeholder="Nhập số lượng" min="1">
+                </div>
+            </div>
+
+            <!-- Question: Kiosk AI -->
+            <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
+                <p class="font-semibold text-gray-800 mb-4">2. Kiosk AI</p>
+                <div class="flex flex-wrap gap-4 items-center">
+                    <label class="flex items-center text-gray-700 cursor-pointer">
+                        <input type="radio" name="dich_vu_2" value="Có" required class="form-radio h-5 w-5 text-indigo-600">
+                        <span class="ml-2">Có</span>
+                    </label>
+                    <label class="flex items-center text-gray-700 cursor-pointer">
+                        <input type="radio" name="dich_vu_2" value="Không" class="form-radio h-5 w-5 text-indigo-600">
+                        <span class="ml-2">Không</span>
+                    </label>
+                </div>
+                <div id="quantity_2" class="mt-4 hidden">
+                    <label for="so_luong_2" class="block text-sm font-medium text-gray-700">Số lượng:</label>
+                    <input type="number" id="so_luong_2" name="so_luong_2" class="form-input mt-1 block w-full" placeholder="Nhập số lượng" min="1">
+                </div>
+            </div>
+
+            <!-- Question: Kiosk bắt số -->
+            <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
+                <p class="font-semibold text-gray-800 mb-4">3. Kiosk bắt số</p>
+                <div class="flex flex-wrap gap-4 items-center">
+                    <label class="flex items-center text-gray-700 cursor-pointer">
+                        <input type="radio" name="dich_vu_3" value="Có" required class="form-radio h-5 w-5 text-indigo-600">
+                        <span class="ml-2">Có</span>
+                    </label>
+                    <label class="flex items-center text-gray-700 cursor-pointer">
+                        <input type="radio" name="dich_vu_3" value="Không" class="form-radio h-5 w-5 text-indigo-600">
+                        <span class="ml-2">Không</span>
+                    </label>
+                </div>
+                <div id="quantity_3" class="mt-4 hidden">
+                    <label for="so_luong_3" class="block text-sm font-medium text-gray-700">Số lượng:</label>
+                    <input type="number" id="so_luong_3" name="so_luong_3" class="form-input mt-1 block w-full" placeholder="Nhập số lượng" min="1">
+                </div>
+            </div>
+            
+            <!-- Question: Hội nghị trực tuyến -->
+            <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
+                <p class="font-semibold text-gray-800 mb-4">4. Hội nghị trực tuyến</p>
+                <div class="flex flex-wrap gap-4 items-center">
+                    <label class="flex items-center text-gray-700 cursor-pointer">
+                        <input type="radio" name="dich_vu_4" value="Có" required class="form-radio h-5 w-5 text-indigo-600">
+                        <span class="ml-2">Có</span>
+                    </label>
+                    <label class="flex items-center text-gray-700 cursor-pointer">
+                        <input type="radio" name="dich_vu_4" value="Không" class="form-radio h-5 w-5 text-indigo-600">
+                        <span class="ml-2">Không</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question: Hệ thống WiFi -->
+            <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
+                <p class="font-semibold text-gray-800 mb-4">5. Hệ thống WiFi</p>
+                <div class="flex flex-wrap gap-4 items-center">
+                    <label class="flex items-center text-gray-700 cursor-pointer">
+                        <input type="radio" name="dich_vu_5" value="Có" required class="form-radio h-5 w-5 text-indigo-600">
+                        <span class="ml-2">Có</span>
+                    </label>
+                    <label class="flex items-center text-gray-700 cursor-pointer">
+                        <input type="radio" name="dich_vu_5" value="Không" class="form-radio h-5 w-5 text-indigo-600">
+                        <span class="ml-2">Không</span>
+                    </label>
+                </div>
+                <!-- Quantity input for this service -->
+                <div id="quantity_5" class="mt-4 hidden">
+                    <label for="so_luong_5" class="block text-sm font-medium text-gray-700">Số lượng:</label>
+                    <input type="number" id="so_luong_5" name="so_luong_5" class="form-input mt-1 block w-full" placeholder="Nhập số lượng" min="1">
+                </div>
+            </div>
+
+            <!-- Question: Camera Hành chính công -->
+            <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
+                <p class="font-semibold text-gray-800 mb-4">6. Camera Hành chính công</p>
+                <div class="flex flex-wrap gap-4 items-center">
+                    <label class="flex items-center text-gray-700 cursor-pointer">
+                        <input type="radio" name="dich_vu_6" value="Có" required class="form-radio h-5 w-5 text-indigo-600">
+                        <span class="ml-2">Có</span>
+                    </label>
+                    <label class="flex items-center text-gray-700 cursor-pointer">
+                        <input type="radio" name="dich_vu_6" value="Không" class="form-radio h-5 w-5 text-indigo-600">
+                        <span class="ml-2">Không</span>
+                    </label>
+                </div>
+                <!-- Quantity input for this service -->
+                <div id="quantity_6" class="mt-4 hidden">
+                    <label for="so_luong_6" class="block text-sm font-medium text-gray-700">Số lượng:</label>
+                    <input type="number" id="so_luong_6" name="so_luong_6" class="form-input mt-1 block w-full" placeholder="Nhập số lượng" min="1">
+                </div>
+            </div>
+            
+            <!-- Question: Camera xã phường -->
+            <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
+                <p class="font-semibold text-gray-800 mb-4">7. Camera xã phường</p>
+                <div class="flex flex-wrap gap-4 items-center">
+                    <label class="flex items-center text-gray-700 cursor-pointer">
+                        <input type="radio" name="dich_vu_7" value="Có" required class="form-radio h-5 w-5 text-indigo-600">
+                        <span class="ml-2">Có</span>
+                    </label>
+                    <label class="flex items-center text-gray-700 cursor-pointer">
+                        <input type="radio" name="dich_vu_7" value="Không" class="form-radio h-5 w-5 text-indigo-600">
+                        <span class="ml-2">Không</span>
+                    </label>
+                </div>
+                <!-- Date picker for this service -->
+                <div id="date_picker_7" class="mt-4 hidden">
+                    <label for="lich_hen_7" class="block text-sm font-medium text-gray-700">Lịch hẹn khảo sát:</label>
+                    <input type="date" id="lich_hen_7" name="lich_hen_7" class="form-input mt-1 block w-full" required>
+                </div>
+            </div>
+
+            <!-- Question: Kênh truyền số liệu chuyên dụng -->
+            <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
+                <p class="font-semibold text-gray-800 mb-4">8. Kênh truyền số liệu chuyên dụng</p>
+                <div class="flex items-center space-x-6 sm:space-x-10">
+                    <label class="text-gray-700 cursor-pointer">
+                        <select name="dich_vu_8" id="dich_vu_8" class="form-select rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <option value="Không">Không</option>
+                            <option value="1 kênh">1 kênh</option>
+                            <option value="2 kênh">2 kênh</option>
+                            <option value="3 kênh">3 kênh</option>
+                            <option value="4 kênh">4 kênh</option>
+                        </select>
+                    </label>
+                </div>
+                <!-- Container for dynamic speed inputs -->
+                <div id="speed_inputs_8" class="mt-4 space-y-2"></div>
+            </div>
+
+            <!-- Question: AI cho Công chức viên chức -->
+            <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
+                <p class="font-semibold text-gray-800 mb-4">9. AI cho Công chức viên chức</p>
+                <div class="flex flex-wrap gap-4 items-center">
+                    <label class="flex items-center text-gray-700 cursor-pointer">
+                        <input type="radio" name="dich_vu_9" value="Có" required class="form-radio h-5 w-5 text-indigo-600">
+                        <span class="ml-2">Có</span>
+                    </label>
+                    <label class="flex items-center text-gray-700 cursor-pointer">
+                        <input type="radio" name="dich_vu_9" value="Không" class="form-radio h-5 w-5 text-indigo-600">
+                        <span class="ml-2">Không</span>
+                    </label>
+                </div>
+                <div id="quantity_9" class="mt-4 hidden">
+                    <label for="so_luong_9" class="block text-sm font-medium text-gray-700">Số lượng:</label>
+                    <input type="number" id="so_luong_9" name="so_luong_9" class="form-input mt-1 block w-full" placeholder="Nhập số lượng" min="1">
+                </div>
+            </div>
+
+            <!-- Question: Smart IR -->
+            <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
+                <p class="font-semibold text-gray-800 mb-4">10. Smart IR</p>
+                <div class="flex flex-wrap gap-4 items-center">
+                    <label class="flex items-center text-gray-700 cursor-pointer">
+                        <input type="radio" name="dich_vu_10" value="Có" required class="form-radio h-5 w-5 text-indigo-600">
+                        <span class="ml-2">Có</span>
+                    </label>
+                    <label class="flex items-center text-gray-700 cursor-pointer">
+                        <input type="radio" name="dich_vu_10" value="Không" class="form-radio h-5 w-5 text-indigo-600">
+                        <span class="ml-2">Không</span>
+                    </label>
+                </div>
+                <div id="quantity_10" class="mt-4 hidden">
+                    <label for="so_luong_10" class="block text-sm font-medium text-gray-700">Số lượng:</label>
+                    <input type="number" id="so_luong_10" name="so_luong_10" class="form-input mt-1 block w-full" placeholder="Nhập số lượng" min="1">
+                </div>
+            </div>
+
+            <!-- Question: Firewall S-Gate -->
+            <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
+                <p class="font-semibold text-gray-800 mb-4">11. Firewall S-Gate</p>
+                <div class="flex flex-wrap gap-4 items-center">
+                    <label class="flex items-center text-gray-700 cursor-pointer">
+                        <input type="radio" name="dich_vu_11" value="Có" required class="form-radio h-5 w-5 text-indigo-600">
+                        <span class="ml-2">Có</span>
+                    </label>
+                    <label class="flex items-center text-gray-700 cursor-pointer">
+                        <input type="radio" name="dich_vu_11" value="Không" class="form-radio h-5 w-5 text-indigo-600">
+                        <span class="ml-2">Không</span>
+                    </label>
+                </div>
+                <!-- Quantity input for this service -->
+                <div id="quantity_11" class="mt-4 hidden">
+                    <label for="so_luong_11" class="block text-sm font-medium text-gray-700">Số lượng:</label>
+                    <input type="number" id="so_luong_11" name="so_luong_11" class="form-input mt-1 block w-full" placeholder="Nhập số lượng" min="1">
+                </div>
+            </div>
+
+            <!-- Question: VNPT-Money -->
+            <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
+                <p class="font-semibold text-gray-800 mb-4">12. VNPT-Money</p>
+                <div class="flex flex-wrap gap-4 items-center">
+                    <label class="flex items-center text-gray-700 cursor-pointer">
+                        <input type="radio" name="dich_vu_12" value="Có" required class="form-radio h-5 w-5 text-indigo-600">
+                        <span class="ml-2">Có</span>
+                    </label>
+                    <label class="flex items-center text-gray-700 cursor-pointer">
+                        <input type="radio" name="dich_vu_12" value="Không" class="form-radio h-5 w-5 text-indigo-600">
+                        <span class="ml-2">Không</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="pt-4">
+                <button type="submit" class="w-full bg-indigo-600 text-white font-semibold py-3 rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300">
+                    Gửi
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Scroll to Top Button -->
+    <button id="scrollTopBtn" class="fixed bottom-4 right-4 z-40 bg-indigo-600 text-white p-3 rounded-full shadow-lg transition-all duration-300 opacity-0 pointer-events-none hover:bg-indigo-700">
+        <!-- Up arrow icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+    </button>
+
+    <!-- Message Box Overlay -->
+    <div id="messageBoxOverlay" class="message-box-overlay"></div>
+
+    <!-- Message Box -->
+    <div id="messageBox" class="message-box">
+        <h3>Cảm ơn bạn đã tham gia khảo sát!</h3>
+        <div id="surveySummary"></div>
+        <button id="closeBtn">Đóng</button>
+    </div>
+
+    <script>
+        // Global variable to store loaded data
+        let surveyData = [];
+
+        // Function to load data from the JSON file
+        async function loadData() {
+            try {
+                // Use the content fetcher to get the file content
+                const response = await fetch("xaphuong.json");
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                surveyData = await response.json();
+                console.log("Data loaded successfully:", surveyData);
+                populateDiaban();
+            } catch (error) {
+                console.error("Error loading data:", error);
+                // Handle error gracefully, maybe show a message to the user
+            }
+        }
+
+        // Function to populate the diaban dropdown
+        function populateDiaban() {
+            const diabanSelect = document.getElementById('diaban');
+            const diabanSet = new Set(surveyData.map(item => item.diaban));
+            diabanSet.forEach(diaban => {
+                const option = document.createElement('option');
+                option.value = diaban;
+                option.textContent = diaban;
+                diabanSelect.appendChild(option);
+            });
+        }
+
+        const surveyForm = document.getElementById('surveyForm');
+        const messageBox = document.getElementById('messageBox');
+        const messageBoxOverlay = document.getElementById('messageBoxOverlay');
+        const closeBtn = document.getElementById('closeBtn');
+        const surveySummary = document.getElementById('surveySummary');
+        const dichVu8Select = document.getElementById('dich_vu_8');
+        const speedInputs8 = document.getElementById('speed_inputs_8');
+        const progressBar = document.getElementById('progressBar');
+        const scrollTopBtn = document.getElementById('scrollTopBtn');
+        const diabanSelect = document.getElementById('diaban');
+
+        // Initialize Select2 on the xaphuong select element
+        $(document).ready(function() {
+            $('#xaphuong').select2({
+                placeholder: '-- Chọn Phường/Xã --',
+                allowClear: true,
+                language: {
+                    noResults: function() {
+                        return "Không tìm thấy kết quả";
+                    }
+                },
+                width: '100%',
+            });
+            // Load the data when the document is ready
+            loadData();
+        });
+
+        // Event listener for diaban change
+        diabanSelect.addEventListener('change', () => {
+            const selectedDiaban = diabanSelect.value;
+            const xaphuongSelect = $('#xaphuong');
+            
+            xaphuongSelect.val(null).trigger('change'); // Clear current selection
+            
+            if (selectedDiaban) {
+                const filteredXaphuong = surveyData.filter(item => item.diaban === selectedDiaban);
+                const formattedData = filteredXaphuong.map(item => ({
+                    id: item.xaphuong,
+                    text: item.xaphuong
+                }));
+                
+                // Update data for Select2
+                xaphuongSelect.empty().select2({
+                    data: formattedData,
+                    placeholder: '-- Chọn Phường/Xã --',
+                    allowClear: true,
+                    width: '100%',
+                });
+                xaphuongSelect.prop('disabled', false);
+            } else {
+                xaphuongSelect.empty().select2({
+                    data: [],
+                    placeholder: '-- Chọn Phường/Xã --',
+                    allowClear: true,
+                    width: '100%',
+                });
+                xaphuongSelect.prop('disabled', true);
+            }
+        });
+
+        // Logic for showing/hiding quantity inputs for radio buttons
+        const servicesWithQuantity = [1, 2, 3, 5, 6, 9, 10, 11];
+        servicesWithQuantity.forEach(index => {
+            const yesInput = document.querySelector(`input[name="dich_vu_${index}"][value="Có"]`);
+            const noInput = document.querySelector(`input[name="dich_vu_${index}"][value="Không"]`);
+            const quantityDiv = document.getElementById(`quantity_${index}`);
+            const quantityInput = document.getElementById(`so_luong_${index}`);
+
+            if (yesInput && noInput && quantityDiv && quantityInput) {
+                yesInput.addEventListener('change', () => {
+                    if (yesInput.checked) {
+                        quantityDiv.classList.remove('hidden');
+                        quantityInput.required = true;
+                    }
+                });
+
+                noInput.addEventListener('change', () => {
+                    if (noInput.checked) {
+                        quantityDiv.classList.add('hidden');
+                        quantityInput.required = false;
+                        quantityInput.value = ''; // Clear value when hidden
+                    }
+                });
+            }
+        });
+        
+        // Logic for showing/hiding the date picker for question 7
+        const dichVu7Yes = document.querySelector('input[name="dich_vu_7"][value="Có"]');
+        const dichVu7No = document.querySelector('input[name="dich_vu_7"][value="Không"]');
+        const datePicker7Div = document.getElementById('date_picker_7');
+        const datePicker7Input = document.getElementById('lich_hen_7');
+
+        dichVu7Yes.addEventListener('change', () => {
+            if (dichVu7Yes.checked) {
+                datePicker7Div.classList.remove('hidden');
+                datePicker7Input.required = true;
+            }
+        });
+
+        dichVu7No.addEventListener('change', () => {
+            if (dichVu7No.checked) {
+                datePicker7Div.classList.add('hidden');
+                datePicker7Input.required = false;
+                datePicker7Input.value = ''; // Clear value when hidden
+            }
+        });
+
+        // Logic for handling the dropdown for "Kênh truyền số liệu chuyên dụng"
+        dichVu8Select.addEventListener('change', (event) => {
+            const selectedValue = event.target.value;
+            const newChannelCount = selectedValue === 'Không' ? 0 : parseInt(selectedValue.split(' ')[0]);
+            const currentChannelCount = speedInputs8.children.length;
+
+            // If the user selects a higher number of channels, add more inputs
+            if (newChannelCount > currentChannelCount) {
+                for (let i = currentChannelCount + 1; i <= newChannelCount; i++) {
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center space-x-2';
+                    div.innerHTML = `
+                        <label for="toc_do_kenh_${i}" class="block text-sm font-medium text-gray-700 w-24">Tốc độ kênh ${i}:</label>
+                        <select id="toc_do_kenh_${i}" name="toc_do_kenh_${i}" class="form-select mt-1 block w-full" required>
+                            <option value="1">1 Mbps</option>
+                            <option value="2">2 Mbps</option>
+                            <option value="4">4 Mbps</option>
+                            <option value="5">5 Mbps</option>
+                            <option value="8">8 Mbps</option>
+                            <option value="10">10 Mbps</option>
+                            <option value="20">20 Mbps</option>
+                            <option value="50">50 Mbps</option>
+                        </select>
+                    `;
+                    speedInputs8.appendChild(div);
+                }
+            }
+            // If the user selects a lower number of channels, remove extra inputs
+            else if (newChannelCount < currentChannelCount) {
+                for (let i = currentChannelCount; i > newChannelCount; i--) {
+                    speedInputs8.removeChild(speedInputs8.lastChild);
+                }
+            }
+        });
+
+        // Scroll Progress Bar Logic
+        window.addEventListener('scroll', () => {
+            const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrollProgress = (scrollTop / scrollHeight) * 100;
+            progressBar.style.width = scrollProgress + '%';
+
+            // Show/hide scroll to top button
+            if (scrollTop > 200) {
+                scrollTopBtn.classList.remove('opacity-0', 'pointer-events-none');
+                scrollTopBtn.classList.add('opacity-100');
+            } else {
+                scrollTopBtn.classList.remove('opacity-100');
+                scrollTopBtn.classList.add('opacity-0', 'pointer-events-none');
+            }
+        });
+
+        // Scroll to Top Button Click Handler
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        surveyForm.addEventListener('submit', function(event) {
+            // Ngăn chặn hành vi gửi form mặc định
+            event.preventDefault();
+
+            // Thu thập dữ liệu
+            const formData = new FormData(surveyForm);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+
+            // Hiển thị loading
+            const submitBtn = surveyForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="inline-flex items-center"><svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Đang gửi...</span>';
+            submitBtn.disabled = true;
+
+            // Gửi dữ liệu lên backend
+            fetch('/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                // Khôi phục nút submit
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+
+                if (result.success) {
+                    // Tạo nội dung tóm tắt
+                    let summaryHtml = '<div class="text-sm space-y-2">';
+                    summaryHtml += `<p><span class="font-medium">Địa bàn:</span> ${data.diaban}</p>`;
+                    summaryHtml += `<p><span class="font-medium">Phường/Xã:</span> ${data.xaphuong}</p>`;
+                    
+                    const services = {
+                        'dich_vu_1': 'Biên lai điện tử',
+                        'dich_vu_2': 'Kiosk AI',
+                        'dich_vu_3': 'Kiosk bắt số',
+                        'dich_vu_4': 'Hội nghị trực tuyến',
+                        'dich_vu_5': 'Hệ thống WiFi',
+                        'dich_vu_6': 'Camera Hành chính công',
+                        'dich_vu_7': 'Camera xã phường',
+                        'dich_vu_8': 'Kênh truyền số liệu chuyên dụng',
+                        'dich_vu_9': 'AI cho Công chức viên chức',
+                        'dich_vu_10': 'Smart IR',
+                        'dich_vu_11': 'Firewall S-Gate',
+                        'dich_vu_12': 'VNPT-Money',
+                    };
+
+                    for (const key in services) {
+                        if (data[key]) {
+                            summaryHtml += `<p><span class="font-medium">${services[key]}:</span> ${data[key]}`;
+                            
+                            // Add quantity for services with radio buttons
+                            const quantityKey = key.replace('dich_vu', 'so_luong');
+                            const quantityValue = data[quantityKey];
+                            if (servicesWithQuantity.includes(parseInt(key.split('_')[2])) && quantityValue) {
+                                 summaryHtml += ` (Số lượng: ${quantityValue})`;
+                            }
+
+                            // Add date for Camera xã phường
+                            if (key === 'dich_vu_7' && data[key] === 'Có') {
+                                 const dateValue = data['lich_hen_7'];
+                                 if (dateValue) {
+                                     summaryHtml += `<br><span class="pl-4">Lịch hẹn:</span> ${dateValue}`;
+                                 }
+                            }
+
+                            // Add speeds for dedicated data channel (dich_vu_8)
+                            if (key === 'dich_vu_8' && data[key] !== 'Không') {
+                                const channelCount = parseInt(data[key].split(' ')[0]);
+                                summaryHtml += `<br><span class="pl-4">Chi tiết:</span>`;
+                                for (let i = 1; i <= channelCount; i++) {
+                                    const speedKey = `toc_do_kenh_${i}`;
+                                    const speedValue = data[speedKey];
+                                    summaryHtml += `<br><span class="pl-8">- Kênh ${i}: ${speedValue || 'Chưa nhập'} Mbps</span>`;
+                                }
+                            }
+                            summaryHtml += `</p>`;
+                        }
+                    }
+                    summaryHtml += '</div>';
+
+                    surveySummary.innerHTML = summaryHtml;
+
+                    // Hiển thị hộp thoại thông báo thành công
+                    messageBox.style.display = 'block';
+                    messageBoxOverlay.style.display = 'block';
+                } else {
+                    // Hiển thị thông báo lỗi
+                    alert('Lỗi: ' + result.message);
+                }
+            })
+            .catch(error => {
+                // Khôi phục nút submit
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                
+                console.error('Lỗi:', error);
+                alert('Có lỗi xảy ra khi gửi dữ liệu. Vui lòng thử lại.');
+            });
+        });
+
+        closeBtn.addEventListener('click', function() {
+            // Đóng hộp thoại thông báo và overlay
+            messageBox.style.display = 'none';
+            messageBoxOverlay.style.display = 'none';
+            // Tùy chọn: Đặt lại form sau khi đóng
+            surveyForm.reset();
+            // Ẩn lại các ô nhập liệu số lượng/tốc độ
+            servicesWithQuantity.forEach(index => {
+                document.getElementById(`quantity_${index}`).classList.add('hidden');
+            });
+            document.getElementById('date_picker_7').classList.add('hidden');
+            speedInputs8.innerHTML = '';
+        });
+    </script>
+</body>
+</html>
