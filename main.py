@@ -34,7 +34,7 @@ def get_google_sheets_client():
 def _format_channel_speeds(data):
     """Format thông tin tốc độ kênh"""
     service_value = data.get("dich_vu_8", "")
-    if service_value in ["Không", "Khác"] or not service_value:
+    if service_value in ["Không"] or not service_value:
         return None
 
     try:
@@ -71,11 +71,9 @@ def submit_to_google_sheet(data):
             if not service_value:
                 return ""
 
-            # Xử lý trường hợp "Khác" với lý do
-            if service_value == "Khác" and reason:
-                return f"Khác ({reason})"
-            elif service_value == "Khác":
-                return "Khác"
+            # Xử lý trường hợp "Không" với lý do
+            if service_value == "Không" and reason:
+                return f"Không ({reason})"
             elif service_value == "Không":
                 return "Không"
 
@@ -91,11 +89,9 @@ def submit_to_google_sheet(data):
             if not service_value:
                 return ""
 
-            # Xử lý trường hợp "Khác" với lý do
-            if service_value == "Khác" and reason:
-                return f"Khác ({reason})"
-            elif service_value == "Khác":
-                return "Khác"
+            # Xử lý trường hợp "Không" với lý do
+            if service_value == "Không" and reason:
+                return f"Không ({reason})"
             elif service_value == "Không":
                 return "Không"
 
@@ -162,7 +158,7 @@ def submit_to_google_sheet(data):
                 None,
                 (
                     _format_channel_speeds(data)
-                    if data.get("dich_vu_8") not in ["Không", "Khác"]
+                    if data.get("dich_vu_8") not in ["Không"]
                     else None
                 ),
                 data.get("ly_do_8", ""),

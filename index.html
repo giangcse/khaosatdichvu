@@ -15,6 +15,8 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <!-- Thêm JS của Select2 -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- Thêm SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -22,59 +24,7 @@
             color: #1f2937;
         }
 
-        /* Custom message box for submission confirmation */
-        .message-box {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #ffffff;
-            padding: 2.5rem;
-            border-radius: 1rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            max-width: 90%;
-            width: 500px;
-            z-index: 100;
-            display: none;
-        }
 
-        .message-box h3 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-
-        .message-box p {
-            margin-bottom: 0.5rem;
-        }
-
-        .message-box button {
-            display: block;
-            width: 100%;
-            margin-top: 1.5rem;
-            background-color: #4f46e5;
-            color: #ffffff;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            transition: background-color 0.3s;
-        }
-
-        .message-box button:hover {
-            background-color: #4338ca;
-        }
-
-        .message-box-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 90;
-            display: none;
-        }
 
         /* Improved styling for inputs and selects */
         .form-input,
@@ -226,23 +176,23 @@
                         <input type="radio" name="dich_vu_1" value="Không" class="form-radio h-5 w-5 text-indigo-600">
                         <span class="ml-2">Không</span>
                     </label>
-                    <label class="flex items-center text-gray-700 cursor-pointer">
-                        <input type="radio" name="dich_vu_1" value="Khác" class="form-radio h-5 w-5 text-indigo-600">
-                        <span class="ml-2">Khác</span>
-                    </label>
                 </div>
-                <!-- Additional options when "Khác" is selected -->
+                <!-- Additional options when "Không" is selected -->
                 <div id="additional_options_1" class="mt-4 hidden">
-                    <p class="text-sm font-medium text-gray-700 mb-2">Vui lòng cho biết chi tiết:</p>
+                    <p class="text-sm font-medium text-gray-700 mb-2">Vui lòng cho biết lý do:</p>
                     <div class="flex flex-wrap gap-4 items-center">
                         <label class="flex items-center text-gray-700 cursor-pointer">
-                            <input type="radio" name="ly_do_1" value="Đã ký với VNPT" class="form-radio h-4 w-4 text-indigo-600">
-                            <span class="ml-2">Đã ký với VNPT</span>
+                            <input type="radio" name="ly_do_1" value="Đã ký hợp đồng với VNPT" class="form-radio h-4 w-4 text-indigo-600">
+                            <span class="ml-2">Đã ký hợp đồng với VNPT</span>
                         </label>
                         <label class="flex items-center text-gray-700 cursor-pointer">
-                            <input type="radio" name="ly_do_1" value="Đã ký với nhà cung cấp khác"
+                            <input type="radio" name="ly_do_1" value="Đã ký hợp đồng với nhà cung cấp khác"
                                 class="form-radio h-4 w-4 text-indigo-600">
-                            <span class="ml-2">Đã ký với nhà cung cấp khác</span>
+                            <span class="ml-2">Đã ký hợp đồng với nhà cung cấp khác</span>
+                            </label>
+                            <label class="flex items-center text-gray-700 cursor-pointer">
+                                <input type="radio" name="ly_do_1" value="Chưa có nhu cầu" class="form-radio h-4 w-4 text-indigo-600">
+                                <span class="ml-2">Chưa có nhu cầu</span>
                         </label>
                     </div>
                 </div>
@@ -253,7 +203,7 @@
                 </div>
             </div>
 
-            <!-- Question: Kiosk AI -->
+                        <!-- Question: Kiosk AI -->
             <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
                 <p class="font-semibold text-gray-800 mb-4">2. Kiosk AI</p>
                 <div class="flex flex-wrap gap-4 items-center">
@@ -265,25 +215,25 @@
                         <input type="radio" name="dich_vu_2" value="Không" class="form-radio h-5 w-5 text-indigo-600">
                         <span class="ml-2">Không</span>
                     </label>
-                    <label class="flex items-center text-gray-700 cursor-pointer">
-                        <input type="radio" name="dich_vu_2" value="Khác" class="form-radio h-5 w-5 text-indigo-600">
-                        <span class="ml-2">Khác</span>
-                    </label>
-                    </div>
-                    <!-- Additional options when "Khác" is selected -->
-                    <div id="additional_options_2" class="mt-4 hidden">
-                        <p class="text-sm font-medium text-gray-700 mb-2">Vui lòng cho biết chi tiết:</p>
-                        <div class="flex flex-wrap gap-4 items-center">
-                            <label class="flex items-center text-gray-700 cursor-pointer">
-                                <input type="radio" name="ly_do_2" value="Đã ký với VNPT" class="form-radio h-4 w-4 text-indigo-600">
-                                <span class="ml-2">Đã ký với VNPT</span>
+                </div>
+                <!-- Additional options when "Không" is selected -->
+                <div id="additional_options_2" class="mt-4 hidden">
+                    <p class="text-sm font-medium text-gray-700 mb-2">Vui lòng cho biết lý do:</p>
+                    <div class="flex flex-wrap gap-4 items-center">
+                        <label class="flex items-center text-gray-700 cursor-pointer">
+                            <input type="radio" name="ly_do_2" value="Đã ký hợp đồng với VNPT" class="form-radio h-4 w-4 text-indigo-600">
+                            <span class="ml-2">Đã ký hợp đồng với VNPT</span>
                             </label>
                             <label class="flex items-center text-gray-700 cursor-pointer">
-                                <input type="radio" name="ly_do_2" value="Đã ký với nhà cung cấp khác"
-                                    class="form-radio h-4 w-4 text-indigo-600">
-                                <span class="ml-2">Đã ký với nhà cung cấp khác</span>
+                            <input type="radio" name="ly_do_2" value="Đã ký hợp đồng với nhà cung cấp khác"
+                                class="form-radio h-4 w-4 text-indigo-600">
+                            <span class="ml-2">Đã ký hợp đồng với nhà cung cấp khác</span>
                             </label>
-                        </div>
+                            <label class="flex items-center text-gray-700 cursor-pointer">
+                                <input type="radio" name="ly_do_2" value="Chưa có nhu cầu" class="form-radio h-4 w-4 text-indigo-600">
+                                <span class="ml-2">Chưa có nhu cầu</span>
+                            </label>
+                            </div>
                 </div>
                 <div id="quantity_2" class="mt-4 hidden">
                     <label for="so_luong_2" class="block text-sm font-medium text-gray-700">Số lượng:</label>
@@ -292,7 +242,7 @@
                 </div>
             </div>
 
-            <!-- Question: Kiosk bắt số -->
+                        <!-- Question: Kiosk bắt số -->
             <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
                 <p class="font-semibold text-gray-800 mb-4">3. Kiosk bắt số</p>
                 <div class="flex flex-wrap gap-4 items-center">
@@ -304,25 +254,25 @@
                         <input type="radio" name="dich_vu_3" value="Không" class="form-radio h-5 w-5 text-indigo-600">
                         <span class="ml-2">Không</span>
                     </label>
-                    <label class="flex items-center text-gray-700 cursor-pointer">
-                        <input type="radio" name="dich_vu_3" value="Khác" class="form-radio h-5 w-5 text-indigo-600">
-                        <span class="ml-2">Khác</span>
-                    </label>
-                    </div>
-                    <!-- Additional options when "Khác" is selected -->
-                    <div id="additional_options_3" class="mt-4 hidden">
-                        <p class="text-sm font-medium text-gray-700 mb-2">Vui lòng cho biết chi tiết:</p>
-                        <div class="flex flex-wrap gap-4 items-center">
-                            <label class="flex items-center text-gray-700 cursor-pointer">
-                                <input type="radio" name="ly_do_3" value="Đã ký với VNPT" class="form-radio h-4 w-4 text-indigo-600">
-                                <span class="ml-2">Đã ký với VNPT</span>
+                </div>
+                <!-- Additional options when "Không" is selected -->
+                <div id="additional_options_3" class="mt-4 hidden">
+                    <p class="text-sm font-medium text-gray-700 mb-2">Vui lòng cho biết lý do:</p>
+                    <div class="flex flex-wrap gap-4 items-center">
+                        <label class="flex items-center text-gray-700 cursor-pointer">
+                            <input type="radio" name="ly_do_3" value="Đã ký hợp đồng với VNPT" class="form-radio h-4 w-4 text-indigo-600">
+                            <span class="ml-2">Đã ký hợp đồng với VNPT</span>
                             </label>
                             <label class="flex items-center text-gray-700 cursor-pointer">
-                                <input type="radio" name="ly_do_3" value="Đã ký với nhà cung cấp khác"
-                                    class="form-radio h-4 w-4 text-indigo-600">
-                                <span class="ml-2">Đã ký với nhà cung cấp khác</span>
+                            <input type="radio" name="ly_do_3" value="Đã ký hợp đồng với nhà cung cấp khác"
+                                class="form-radio h-4 w-4 text-indigo-600">
+                            <span class="ml-2">Đã ký hợp đồng với nhà cung cấp khác</span>
                             </label>
-                        </div>
+                            <label class="flex items-center text-gray-700 cursor-pointer">
+                                <input type="radio" name="ly_do_3" value="Chưa có nhu cầu" class="form-radio h-4 w-4 text-indigo-600">
+                                <span class="ml-2">Chưa có nhu cầu</span>
+                            </label>
+                            </div>
                 </div>
                 <div id="quantity_3" class="mt-4 hidden">
                     <label for="so_luong_3" class="block text-sm font-medium text-gray-700">Số lượng:</label>
@@ -331,7 +281,7 @@
                 </div>
             </div>
 
-            <!-- Question: Hội nghị trực tuyến -->
+                        <!-- Question: Hội nghị trực tuyến -->
             <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
                 <p class="font-semibold text-gray-800 mb-4">4. Hội nghị trực tuyến</p>
                 <div class="flex flex-wrap gap-4 items-center">
@@ -343,29 +293,29 @@
                         <input type="radio" name="dich_vu_4" value="Không" class="form-radio h-5 w-5 text-indigo-600">
                         <span class="ml-2">Không</span>
                     </label>
-                    <label class="flex items-center text-gray-700 cursor-pointer">
-                        <input type="radio" name="dich_vu_4" value="Khác" class="form-radio h-5 w-5 text-indigo-600">
-                        <span class="ml-2">Khác</span>
-                    </label>
-                    </div>
-                    <!-- Additional options when "Khác" is selected -->
-                    <div id="additional_options_4" class="mt-4 hidden">
-                        <p class="text-sm font-medium text-gray-700 mb-2">Vui lòng cho biết chi tiết:</p>
-                        <div class="flex flex-wrap gap-4 items-center">
-                            <label class="flex items-center text-gray-700 cursor-pointer">
-                                <input type="radio" name="ly_do_4" value="Đã ký với VNPT" class="form-radio h-4 w-4 text-indigo-600">
-                                <span class="ml-2">Đã ký với VNPT</span>
+                </div>
+                <!-- Additional options when "Không" is selected -->
+                <div id="additional_options_4" class="mt-4 hidden">
+                    <p class="text-sm font-medium text-gray-700 mb-2">Vui lòng cho biết lý do:</p>
+                    <div class="flex flex-wrap gap-4 items-center">
+                        <label class="flex items-center text-gray-700 cursor-pointer">
+                            <input type="radio" name="ly_do_4" value="Đã ký hợp đồng với VNPT" class="form-radio h-4 w-4 text-indigo-600">
+                            <span class="ml-2">Đã ký hợp đồng với VNPT</span>
                             </label>
                             <label class="flex items-center text-gray-700 cursor-pointer">
-                                <input type="radio" name="ly_do_4" value="Đã ký với nhà cung cấp khác"
-                                    class="form-radio h-4 w-4 text-indigo-600">
-                                <span class="ml-2">Đã ký với nhà cung cấp khác</span>
+                            <input type="radio" name="ly_do_4" value="Đã ký hợp đồng với nhà cung cấp khác"
+                                class="form-radio h-4 w-4 text-indigo-600">
+                            <span class="ml-2">Đã ký hợp đồng với nhà cung cấp khác</span>
                             </label>
-                        </div>
+                            <label class="flex items-center text-gray-700 cursor-pointer">
+                                <input type="radio" name="ly_do_4" value="Chưa có nhu cầu" class="form-radio h-4 w-4 text-indigo-600">
+                                <span class="ml-2">Chưa có nhu cầu</span>
+                            </label>
+                            </div>
                 </div>
             </div>
 
-            <!-- Question: Hệ thống WiFi -->
+                        <!-- Question: Hệ thống WiFi -->
             <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
                 <p class="font-semibold text-gray-800 mb-4">5. Hệ thống WiFi</p>
                 <div class="flex flex-wrap gap-4 items-center">
@@ -377,25 +327,25 @@
                         <input type="radio" name="dich_vu_5" value="Không" class="form-radio h-5 w-5 text-indigo-600">
                         <span class="ml-2">Không</span>
                     </label>
-                    <label class="flex items-center text-gray-700 cursor-pointer">
-                        <input type="radio" name="dich_vu_5" value="Khác" class="form-radio h-5 w-5 text-indigo-600">
-                        <span class="ml-2">Khác</span>
-                    </label>
-                    </div>
-                    <!-- Additional options when "Khác" is selected -->
-                    <div id="additional_options_5" class="mt-4 hidden">
-                        <p class="text-sm font-medium text-gray-700 mb-2">Vui lòng cho biết chi tiết:</p>
-                        <div class="flex flex-wrap gap-4 items-center">
-                            <label class="flex items-center text-gray-700 cursor-pointer">
-                                <input type="radio" name="ly_do_5" value="Đã ký với VNPT" class="form-radio h-4 w-4 text-indigo-600">
-                                <span class="ml-2">Đã ký với VNPT</span>
+                </div>
+                <!-- Additional options when "Không" is selected -->
+                <div id="additional_options_5" class="mt-4 hidden">
+                    <p class="text-sm font-medium text-gray-700 mb-2">Vui lòng cho biết lý do:</p>
+                    <div class="flex flex-wrap gap-4 items-center">
+                        <label class="flex items-center text-gray-700 cursor-pointer">
+                            <input type="radio" name="ly_do_5" value="Đã ký hợp đồng với VNPT" class="form-radio h-4 w-4 text-indigo-600">
+                            <span class="ml-2">Đã ký hợp đồng với VNPT</span>
                             </label>
                             <label class="flex items-center text-gray-700 cursor-pointer">
-                                <input type="radio" name="ly_do_5" value="Đã ký với nhà cung cấp khác"
-                                    class="form-radio h-4 w-4 text-indigo-600">
-                                <span class="ml-2">Đã ký với nhà cung cấp khác</span>
+                            <input type="radio" name="ly_do_5" value="Đã ký hợp đồng với nhà cung cấp khác"
+                                class="form-radio h-4 w-4 text-indigo-600">
+                            <span class="ml-2">Đã ký hợp đồng với nhà cung cấp khác</span>
                             </label>
-                        </div>
+                            <label class="flex items-center text-gray-700 cursor-pointer">
+                                <input type="radio" name="ly_do_5" value="Chưa có nhu cầu" class="form-radio h-4 w-4 text-indigo-600">
+                                <span class="ml-2">Chưa có nhu cầu</span>
+                            </label>
+                            </div>
                 </div>
                 <!-- Quantity input for this service -->
                 <div id="quantity_5" class="mt-4 hidden">
@@ -405,7 +355,7 @@
                 </div>
             </div>
 
-            <!-- Question: Camera Hành chính công -->
+                        <!-- Question: Camera Hành chính công -->
             <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
                 <p class="font-semibold text-gray-800 mb-4">6. Camera Hành chính công</p>
                 <div class="flex flex-wrap gap-4 items-center">
@@ -417,25 +367,25 @@
                         <input type="radio" name="dich_vu_6" value="Không" class="form-radio h-5 w-5 text-indigo-600">
                         <span class="ml-2">Không</span>
                     </label>
-                    <label class="flex items-center text-gray-700 cursor-pointer">
-                        <input type="radio" name="dich_vu_6" value="Khác" class="form-radio h-5 w-5 text-indigo-600">
-                        <span class="ml-2">Khác</span>
-                    </label>
-                    </div>
-                    <!-- Additional options when "Khác" is selected -->
-                    <div id="additional_options_6" class="mt-4 hidden">
-                        <p class="text-sm font-medium text-gray-700 mb-2">Vui lòng cho biết chi tiết:</p>
-                        <div class="flex flex-wrap gap-4 items-center">
-                            <label class="flex items-center text-gray-700 cursor-pointer">
-                                <input type="radio" name="ly_do_6" value="Đã ký với VNPT" class="form-radio h-4 w-4 text-indigo-600">
-                                <span class="ml-2">Đã ký với VNPT</span>
+                </div>
+                <!-- Additional options when "Không" is selected -->
+                <div id="additional_options_6" class="mt-4 hidden">
+                    <p class="text-sm font-medium text-gray-700 mb-2">Vui lòng cho biết lý do:</p>
+                    <div class="flex flex-wrap gap-4 items-center">
+                        <label class="flex items-center text-gray-700 cursor-pointer">
+                            <input type="radio" name="ly_do_6" value="Đã ký hợp đồng với VNPT" class="form-radio h-4 w-4 text-indigo-600">
+                            <span class="ml-2">Đã ký hợp đồng với VNPT</span>
                             </label>
                             <label class="flex items-center text-gray-700 cursor-pointer">
-                                <input type="radio" name="ly_do_6" value="Đã ký với nhà cung cấp khác"
-                                    class="form-radio h-4 w-4 text-indigo-600">
-                                <span class="ml-2">Đã ký với nhà cung cấp khác</span>
+                            <input type="radio" name="ly_do_6" value="Đã ký hợp đồng với nhà cung cấp khác"
+                                class="form-radio h-4 w-4 text-indigo-600">
+                            <span class="ml-2">Đã ký hợp đồng với nhà cung cấp khác</span>
                             </label>
-                        </div>
+                            <label class="flex items-center text-gray-700 cursor-pointer">
+                                <input type="radio" name="ly_do_6" value="Chưa có nhu cầu" class="form-radio h-4 w-4 text-indigo-600">
+                                <span class="ml-2">Chưa có nhu cầu</span>
+                            </label>
+                            </div>
                 </div>
                 <!-- Quantity input for this service -->
                 <div id="quantity_6" class="mt-4 hidden">
@@ -445,7 +395,7 @@
                 </div>
             </div>
 
-            <!-- Question: Camera xã phường -->
+                        <!-- Question: Camera xã phường -->
             <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
                 <p class="font-semibold text-gray-800 mb-4">7. Camera xã phường</p>
                 <div class="flex flex-wrap gap-4 items-center">
@@ -457,25 +407,25 @@
                         <input type="radio" name="dich_vu_7" value="Không" class="form-radio h-5 w-5 text-indigo-600">
                         <span class="ml-2">Không</span>
                     </label>
-                    <label class="flex items-center text-gray-700 cursor-pointer">
-                        <input type="radio" name="dich_vu_7" value="Khác" class="form-radio h-5 w-5 text-indigo-600">
-                        <span class="ml-2">Khác</span>
-                    </label>
-                    </div>
-                    <!-- Additional options when "Khác" is selected -->
-                    <div id="additional_options_7" class="mt-4 hidden">
-                        <p class="text-sm font-medium text-gray-700 mb-2">Vui lòng cho biết chi tiết:</p>
-                        <div class="flex flex-wrap gap-4 items-center">
-                            <label class="flex items-center text-gray-700 cursor-pointer">
-                                <input type="radio" name="ly_do_7" value="Đã ký với VNPT" class="form-radio h-4 w-4 text-indigo-600">
-                                <span class="ml-2">Đã ký với VNPT</span>
+                </div>
+                <!-- Additional options when "Không" is selected -->
+                <div id="additional_options_7" class="mt-4 hidden">
+                    <p class="text-sm font-medium text-gray-700 mb-2">Vui lòng cho biết lý do:</p>
+                    <div class="flex flex-wrap gap-4 items-center">
+                        <label class="flex items-center text-gray-700 cursor-pointer">
+                            <input type="radio" name="ly_do_7" value="Đã ký hợp đồng với VNPT" class="form-radio h-4 w-4 text-indigo-600">
+                            <span class="ml-2">Đã ký hợp đồng với VNPT</span>
                             </label>
                             <label class="flex items-center text-gray-700 cursor-pointer">
-                                <input type="radio" name="ly_do_7" value="Đã ký với nhà cung cấp khác"
-                                    class="form-radio h-4 w-4 text-indigo-600">
-                                <span class="ml-2">Đã ký với nhà cung cấp khác</span>
+                            <input type="radio" name="ly_do_7" value="Đã ký hợp đồng với nhà cung cấp khác"
+                                class="form-radio h-4 w-4 text-indigo-600">
+                            <span class="ml-2">Đã ký hợp đồng với nhà cung cấp khác</span>
                             </label>
-                        </div>
+                            <label class="flex items-center text-gray-700 cursor-pointer">
+                                <input type="radio" name="ly_do_7" value="Chưa có nhu cầu" class="form-radio h-4 w-4 text-indigo-600">
+                                <span class="ml-2">Chưa có nhu cầu</span>
+                            </label>
+                            </div>
                 </div>
                 <!-- Date picker for this service -->
                 <div id="date_picker_7" class="mt-4 hidden">
@@ -494,7 +444,6 @@
                             required>
                             <option value="">-- Chọn số kênh --</option>
                             <option value="Không">Không</option>
-                            <option value="Khác">Khác</option>
                             <option value="1 kênh">1 kênh</option>
                             <option value="2 kênh">2 kênh</option>
                             <option value="3 kênh">3 kênh</option>
@@ -502,18 +451,22 @@
                         </select>
                     </label>
                 </div>
-                <!-- Additional options when "Khác" is selected -->
+                <!-- Additional options when "Không" is selected -->
                 <div id="additional_options_8" class="mt-4 hidden">
-                    <p class="text-sm font-medium text-gray-700 mb-2">Vui lòng cho biết chi tiết:</p>
+                    <p class="text-sm font-medium text-gray-700 mb-2">Vui lòng cho biết lý do:</p>
                     <div class="flex flex-wrap gap-4 items-center">
                         <label class="flex items-center text-gray-700 cursor-pointer">
-                            <input type="radio" name="ly_do_8" value="Đã ký với VNPT" class="form-radio h-4 w-4 text-indigo-600">
-                            <span class="ml-2">Đã ký với VNPT</span>
+                            <input type="radio" name="ly_do_8" value="Đã ký hợp đồng với VNPT" class="form-radio h-4 w-4 text-indigo-600">
+                            <span class="ml-2">Đã ký hợp đồng với VNPT</span>
                         </label>
                         <label class="flex items-center text-gray-700 cursor-pointer">
-                            <input type="radio" name="ly_do_8" value="Đã ký với nhà cung cấp khác"
+                            <input type="radio" name="ly_do_8" value="Đã ký hợp đồng với nhà cung cấp khác"
                                 class="form-radio h-4 w-4 text-indigo-600">
-                            <span class="ml-2">Đã ký với nhà cung cấp khác</span>
+                            <span class="ml-2">Đã ký hợp đồng với nhà cung cấp khác</span>
+                            </label>
+                            <label class="flex items-center text-gray-700 cursor-pointer">
+                                <input type="radio" name="ly_do_8" value="Chưa có nhu cầu" class="form-radio h-4 w-4 text-indigo-600">
+                                <span class="ml-2">Chưa có nhu cầu</span>
                         </label>
                     </div>
                 </div>
@@ -533,23 +486,23 @@
                         <input type="radio" name="dich_vu_9" value="Không" class="form-radio h-5 w-5 text-indigo-600">
                         <span class="ml-2">Không</span>
                     </label>
-                    <label class="flex items-center text-gray-700 cursor-pointer">
-                        <input type="radio" name="dich_vu_9" value="Khác" class="form-radio h-5 w-5 text-indigo-600">
-                        <span class="ml-2">Khác</span>
-                    </label>
                     </div>
-                    <!-- Additional options when "Khác" is selected -->
+                    <!-- Additional options when "Không" is selected -->
                     <div id="additional_options_9" class="mt-4 hidden">
-                        <p class="text-sm font-medium text-gray-700 mb-2">Vui lòng cho biết chi tiết:</p>
+                        <p class="text-sm font-medium text-gray-700 mb-2">Vui lòng cho biết lý do:</p>
                         <div class="flex flex-wrap gap-4 items-center">
                             <label class="flex items-center text-gray-700 cursor-pointer">
-                                <input type="radio" name="ly_do_9" value="Đã ký với VNPT" class="form-radio h-4 w-4 text-indigo-600">
-                                <span class="ml-2">Đã ký với VNPT</span>
+                                <input type="radio" name="ly_do_9" value="Đã ký hợp đồng với VNPT" class="form-radio h-4 w-4 text-indigo-600">
+                                <span class="ml-2">Đã ký hợp đồng với VNPT</span>
                             </label>
                             <label class="flex items-center text-gray-700 cursor-pointer">
-                                <input type="radio" name="ly_do_9" value="Đã ký với nhà cung cấp khác"
+                                <input type="radio" name="ly_do_9" value="Đã ký hợp đồng với nhà cung cấp khác"
                                     class="form-radio h-4 w-4 text-indigo-600">
-                                <span class="ml-2">Đã ký với nhà cung cấp khác</span>
+                                <span class="ml-2">Đã ký hợp đồng với nhà cung cấp khác</span>
+                                </label>
+                                <label class="flex items-center text-gray-700 cursor-pointer">
+                                    <input type="radio" name="ly_do_9" value="Chưa có nhu cầu" class="form-radio h-4 w-4 text-indigo-600">
+                                    <span class="ml-2">Chưa có nhu cầu</span>
                             </label>
                         </div>
                 </div>
@@ -572,23 +525,23 @@
                         <input type="radio" name="dich_vu_10" value="Không" class="form-radio h-5 w-5 text-indigo-600">
                         <span class="ml-2">Không</span>
                     </label>
-                    <label class="flex items-center text-gray-700 cursor-pointer">
-                        <input type="radio" name="dich_vu_10" value="Khác" class="form-radio h-5 w-5 text-indigo-600">
-                        <span class="ml-2">Khác</span>
-                    </label>
                     </div>
-                    <!-- Additional options when "Khác" is selected -->
+                    <!-- Additional options when "Không" is selected -->
                     <div id="additional_options_10" class="mt-4 hidden">
-                        <p class="text-sm font-medium text-gray-700 mb-2">Vui lòng cho biết chi tiết:</p>
+                        <p class="text-sm font-medium text-gray-700 mb-2">Vui lòng cho biết lý do:</p>
                         <div class="flex flex-wrap gap-4 items-center">
                             <label class="flex items-center text-gray-700 cursor-pointer">
-                                <input type="radio" name="ly_do_10" value="Đã ký với VNPT" class="form-radio h-4 w-4 text-indigo-600">
-                                <span class="ml-2">Đã ký với VNPT</span>
+                                <input type="radio" name="ly_do_10" value="Đã ký hợp đồng với VNPT" class="form-radio h-4 w-4 text-indigo-600">
+                                <span class="ml-2">Đã ký hợp đồng với VNPT</span>
                             </label>
                             <label class="flex items-center text-gray-700 cursor-pointer">
-                                <input type="radio" name="ly_do_10" value="Đã ký với nhà cung cấp khác"
+                                <input type="radio" name="ly_do_10" value="Đã ký hợp đồng với nhà cung cấp khác"
                                     class="form-radio h-4 w-4 text-indigo-600">
-                                <span class="ml-2">Đã ký với nhà cung cấp khác</span>
+                                <span class="ml-2">Đã ký hợp đồng với nhà cung cấp khác</span>
+                                </label>
+                                <label class="flex items-center text-gray-700 cursor-pointer">
+                                    <input type="radio" name="ly_do_10" value="Chưa có nhu cầu" class="form-radio h-4 w-4 text-indigo-600">
+                                    <span class="ml-2">Chưa có nhu cầu</span>
                             </label>
                         </div>
                 </div>
@@ -611,23 +564,23 @@
                         <input type="radio" name="dich_vu_11" value="Không" class="form-radio h-5 w-5 text-indigo-600">
                         <span class="ml-2">Không</span>
                     </label>
-                    <label class="flex items-center text-gray-700 cursor-pointer">
-                        <input type="radio" name="dich_vu_11" value="Khác" class="form-radio h-5 w-5 text-indigo-600">
-                        <span class="ml-2">Khác</span>
-                    </label>
                     </div>
-                    <!-- Additional options when "Khác" is selected -->
+                    <!-- Additional options when "Không" is selected -->
                     <div id="additional_options_11" class="mt-4 hidden">
-                        <p class="text-sm font-medium text-gray-700 mb-2">Vui lòng cho biết chi tiết:</p>
+                        <p class="text-sm font-medium text-gray-700 mb-2">Vui lòng cho biết lý do:</p>
                         <div class="flex flex-wrap gap-4 items-center">
                             <label class="flex items-center text-gray-700 cursor-pointer">
-                                <input type="radio" name="ly_do_11" value="Đã ký với VNPT" class="form-radio h-4 w-4 text-indigo-600">
-                                <span class="ml-2">Đã ký với VNPT</span>
+                                <input type="radio" name="ly_do_11" value="Đã ký hợp đồng với VNPT" class="form-radio h-4 w-4 text-indigo-600">
+                                <span class="ml-2">Đã ký hợp đồng với VNPT</span>
                             </label>
                             <label class="flex items-center text-gray-700 cursor-pointer">
-                                <input type="radio" name="ly_do_11" value="Đã ký với nhà cung cấp khác"
+                                <input type="radio" name="ly_do_11" value="Đã ký hợp đồng với nhà cung cấp khác"
                                     class="form-radio h-4 w-4 text-indigo-600">
-                                <span class="ml-2">Đã ký với nhà cung cấp khác</span>
+                                <span class="ml-2">Đã ký hợp đồng với nhà cung cấp khác</span>
+                                </label>
+                                <label class="flex items-center text-gray-700 cursor-pointer">
+                                    <input type="radio" name="ly_do_11" value="Chưa có nhu cầu" class="form-radio h-4 w-4 text-indigo-600">
+                                    <span class="ml-2">Chưa có nhu cầu</span>
                             </label>
                         </div>
                 </div>
@@ -651,23 +604,23 @@
                         <input type="radio" name="dich_vu_12" value="Không" class="form-radio h-5 w-5 text-indigo-600">
                         <span class="ml-2">Không</span>
                     </label>
-                    <label class="flex items-center text-gray-700 cursor-pointer">
-                        <input type="radio" name="dich_vu_12" value="Khác" class="form-radio h-5 w-5 text-indigo-600">
-                        <span class="ml-2">Khác</span>
-                    </label>
                     </div>
-                    <!-- Additional options when "Khác" is selected -->
+                    <!-- Additional options when "Không" is selected -->
                     <div id="additional_options_12" class="mt-4 hidden">
-                        <p class="text-sm font-medium text-gray-700 mb-2">Vui lòng cho biết chi tiết:</p>
+                        <p class="text-sm font-medium text-gray-700 mb-2">Vui lòng cho biết lý do:</p>
                         <div class="flex flex-wrap gap-4 items-center">
                             <label class="flex items-center text-gray-700 cursor-pointer">
-                                <input type="radio" name="ly_do_12" value="Đã ký với VNPT" class="form-radio h-4 w-4 text-indigo-600">
-                                <span class="ml-2">Đã ký với VNPT</span>
+                                <input type="radio" name="ly_do_12" value="Đã ký hợp đồng với VNPT" class="form-radio h-4 w-4 text-indigo-600">
+                                <span class="ml-2">Đã ký hợp đồng với VNPT</span>
                             </label>
                             <label class="flex items-center text-gray-700 cursor-pointer">
-                                <input type="radio" name="ly_do_12" value="Đã ký với nhà cung cấp khác"
+                                <input type="radio" name="ly_do_12" value="Đã ký hợp đồng với nhà cung cấp khác"
                                     class="form-radio h-4 w-4 text-indigo-600">
-                                <span class="ml-2">Đã ký với nhà cung cấp khác</span>
+                                <span class="ml-2">Đã ký hợp đồng với nhà cung cấp khác</span>
+                                </label>
+                                <label class="flex items-center text-gray-700 cursor-pointer">
+                                    <input type="radio" name="ly_do_12" value="Chưa có nhu cầu" class="form-radio h-4 w-4 text-indigo-600">
+                                    <span class="ml-2">Chưa có nhu cầu</span>
                             </label>
                         </div>
                 </div>
@@ -692,15 +645,7 @@
         </svg>
     </button>
 
-    <!-- Message Box Overlay -->
-    <div id="messageBoxOverlay" class="message-box-overlay"></div>
 
-    <!-- Message Box -->
-    <div id="messageBox" class="message-box">
-        <h3>Cảm ơn bạn đã tham gia khảo sát!</h3>
-        <div id="surveySummary"></div>
-        <button id="closeBtn">Đóng</button>
-    </div>
 
     <script>
         // Global variable to store loaded data
@@ -780,10 +725,7 @@
             console.log(`📋 Đã load ${diabanArray.length} địa bàn:`, diabanArray);
         }
 
-        const surveyForm = document.getElementById('surveyForm');
-        const messageBox = document.getElementById('messageBox');
-        const messageBoxOverlay = document.getElementById('messageBoxOverlay');
-        const closeBtn = document.getElementById('closeBtn');
+                            const surveyForm = document.getElementById('surveyForm');
         const surveySummary = document.getElementById('surveySummary');
         const dichVu8Select = document.getElementById('dich_vu_8');
         const speedInputs8 = document.getElementById('speed_inputs_8');
@@ -851,12 +793,11 @@
         servicesWithQuantity.forEach(index => {
             const yesInput = document.querySelector(`input[name="dich_vu_${index}"][value="Có"]`);
             const noInput = document.querySelector(`input[name="dich_vu_${index}"][value="Không"]`);
-            const otherInput = document.querySelector(`input[name="dich_vu_${index}"][value="Khác"]`);
             const quantityDiv = document.getElementById(`quantity_${index}`);
             const quantityInput = document.getElementById(`so_luong_${index}`);
             const additionalOptionsDiv = document.getElementById(`additional_options_${index}`);
 
-            if (yesInput && noInput && otherInput && quantityDiv && quantityInput) {
+            if (yesInput && noInput && quantityDiv && quantityInput) {
                 yesInput.addEventListener('change', () => {
                     if (yesInput.checked) {
                         quantityDiv.classList.remove('hidden');
@@ -879,25 +820,7 @@
                         quantityDiv.classList.add('hidden');
                         quantityInput.required = false;
                         quantityInput.value = ''; // Clear value when hidden
-                        // Hide additional options when "Không" is selected
-                        if (additionalOptionsDiv) {
-                            additionalOptionsDiv.classList.add('hidden');
-                            // Clear additional options
-                            const additionalRadios = additionalOptionsDiv.querySelectorAll('input[type="radio"]');
-                            additionalRadios.forEach(radio => {
-                                radio.checked = false;
-                                radio.required = false;
-                            });
-                        }
-                    }
-                });
-
-                otherInput.addEventListener('change', () => {
-                    if (otherInput.checked) {
-                        quantityDiv.classList.add('hidden');
-                        quantityInput.required = false;
-                        quantityInput.value = ''; // Clear value when hidden
-                        // Show additional options when "Khác" is selected
+                        // Show additional options when "Không" is selected
                         if (additionalOptionsDiv) {
                             additionalOptionsDiv.classList.remove('hidden');
                             // Make additional options required
@@ -916,10 +839,9 @@
                             servicesWithoutQuantity.forEach(index => {
                                 const yesInput = document.querySelector(`input[name="dich_vu_${index}"][value="Có"]`);
                                 const noInput = document.querySelector(`input[name="dich_vu_${index}"][value="Không"]`);
-                                const otherInput = document.querySelector(`input[name="dich_vu_${index}"][value="Khác"]`);
                                 const additionalOptionsDiv = document.getElementById(`additional_options_${index}`);
 
-                                if (yesInput && noInput && otherInput && additionalOptionsDiv) {
+                                if (yesInput && noInput && additionalOptionsDiv) {
                                     yesInput.addEventListener('change', () => {
                                         if (yesInput.checked) {
                                             // Hide additional options when "Có" is selected
@@ -935,20 +857,7 @@
 
                                     noInput.addEventListener('change', () => {
                                         if (noInput.checked) {
-                                            // Hide additional options when "Không" is selected
-                                            additionalOptionsDiv.classList.add('hidden');
-                                            // Clear additional options
-                                            const additionalRadios = additionalOptionsDiv.querySelectorAll('input[type="radio"]');
-                                            additionalRadios.forEach(radio => {
-                                                radio.checked = false;
-                                                radio.required = false;
-                                            });
-                                        }
-                                    });
-
-                                    otherInput.addEventListener('change', () => {
-                                        if (otherInput.checked) {
-                                            // Show additional options when "Khác" is selected
+                                            // Show additional options when "Không" is selected
                                             additionalOptionsDiv.classList.remove('hidden');
                                             // Make additional options required
                                             const additionalRadios = additionalOptionsDiv.querySelectorAll('input[type="radio"]');
@@ -962,8 +871,7 @@
 
         // Logic for showing/hiding the date picker for question 7
         const dichVu7Yes = document.querySelector('input[name="dich_vu_7"][value="Có"]');
-        const dichVu7No = document.querySelector('input[name="dich_vu_7"][value="Không"]');
-                const dichVu7Other = document.querySelector('input[name="dich_vu_7"][value="Khác"]');
+                            const dichVu7No = document.querySelector('input[name="dich_vu_7"][value="Không"]');
         const datePicker7Div = document.getElementById('date_picker_7');
         const datePicker7Input = document.getElementById('lich_hen_7');
 
@@ -982,21 +890,13 @@
             }
         });
 
-                dichVu7Other.addEventListener('change', () => {
-                    if (dichVu7Other.checked) {
-                        datePicker7Div.classList.add('hidden');
-                        datePicker7Input.required = false;
-                        datePicker7Input.value = ''; // Clear value when hidden
-                    }
-                });
-
                         // Logic for handling the dropdown for "Kênh truyền số liệu chuyên dụng"
         dichVu8Select.addEventListener('change', (event) => {
             const selectedValue = event.target.value;
             const additionalOptions8Div = document.getElementById('additional_options_8');
 
-            if (selectedValue === 'Khác') {
-                // Show additional options when "Khác" is selected
+            if (selectedValue === 'Không') {
+            // Show additional options when "Không" is selected
                 if (additionalOptions8Div) {
                     additionalOptions8Div.classList.remove('hidden');
                     // Make additional options required
@@ -1007,7 +907,7 @@
                 }
                 // Clear speed inputs
                 speedInputs8.innerHTML = '';
-            } else if (selectedValue && selectedValue !== '' && selectedValue !== 'Không') {
+            } else if (selectedValue && selectedValue !== '') {
                 // Hide additional options when other options are selected
                 if (additionalOptions8Div) {
                     additionalOptions8Div.classList.add('hidden');
@@ -1051,19 +951,6 @@
                         speedInputs8.removeChild(speedInputs8.lastChild);
                     }
                 }
-            } else if (selectedValue === 'Không') {
-                // Hide additional options when "Không" is selected
-                if (additionalOptions8Div) {
-                    additionalOptions8Div.classList.add('hidden');
-                    // Clear additional options
-                    const additionalRadios = additionalOptions8Div.querySelectorAll('input[type="radio"]');
-                    additionalRadios.forEach(radio => {
-                        radio.checked = false;
-                        radio.required = false;
-                    });
-                }
-                // Clear speed inputs
-                speedInputs8.innerHTML = '';
             }
         });
 
@@ -1135,82 +1022,50 @@
                     submitBtn.disabled = false;
 
                     if (result.success) {
-                        // Tạo nội dung tóm tắt
-                        let summaryHtml = '<div class="text-sm space-y-2">';
-                        summaryHtml += `<p><span class="font-medium">Địa bàn:</span> ${data.diaban}</p>`;
-                        summaryHtml += `<p><span class="font-medium">Phường/Xã:</span> ${data.xaphuong}</p>`;
-                        summaryHtml += `<p><span class="font-medium">Nhân viên khảo sát:</span> ${data.nhan_vien_khao_sat} (${data.so_dien_thoai_nv})</p>`;
-                        summaryHtml += `<p><span class="font-medium">Người đầu mối:</span> ${data.nguoi_dau_moi} - ${data.chuc_vu} (${data.so_dien_thoai_dm})</p>`;
-
-                        const services = {
-                            'dich_vu_1': 'Biên lai điện tử',
-                            'dich_vu_2': 'Kiosk AI',
-                            'dich_vu_3': 'Kiosk bắt số',
-                            'dich_vu_4': 'Hội nghị trực tuyến',
-                            'dich_vu_5': 'Hệ thống WiFi',
-                            'dich_vu_6': 'Camera Hành chính công',
-                            'dich_vu_7': 'Camera xã phường',
-                            'dich_vu_8': 'Kênh truyền số liệu chuyên dụng',
-                            'dich_vu_9': 'AI cho Công chức viên chức',
-                            'dich_vu_10': 'Smart IR',
-                            'dich_vu_11': 'Firewall S-Gate',
-                            'dich_vu_12': 'VNPT-Money',
-                        };
-
-                        for (const key in services) {
-                            if (data[key]) {
-                                summaryHtml += `<p><span class="font-medium">${services[key]}:</span> ${data[key]}`;
-
-                                // Add quantity for services with radio buttons
-                                const quantityKey = key.replace('dich_vu', 'so_luong');
-                                const quantityValue = data[quantityKey];
-                                if (servicesWithQuantity.includes(parseInt(key.split('_')[2])) && quantityValue) {
-                                    summaryHtml += ` (Số lượng: ${quantityValue})`;
+                        // Hiển thị thông báo thành công với SweetAlert2
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công!',
+                            text: 'Dữ liệu đã được gửi thành công.',
+                            confirmButtonText: 'Đóng',
+                            confirmButtonColor: '#4f46e5'
+                        }).then((result) => {
+                            // Reset form sau khi đóng thông báo
+                            surveyForm.reset();
+                            // Ẩn lại các ô nhập liệu số lượng/tốc độ
+                            servicesWithQuantity.forEach(index => {
+                                document.getElementById(`quantity_${index}`).classList.add('hidden');
+                                // Hide additional options
+                                const additionalOptionsDiv = document.getElementById(`additional_options_${index}`);
+                                if (additionalOptionsDiv) {
+                                    additionalOptionsDiv.classList.add('hidden');
                                 }
-
-                                // Add date for Camera xã phường
-                                if (key === 'dich_vu_7' && data[key] === 'Có') {
-                                    const dateValue = data['lich_hen_7'];
-                                    if (dateValue) {
-                                        // Chuyển đổi format ngày từ YYYY-MM-DD sang dd/mm/YYYY
-                                        const dateObj = new Date(dateValue);
-                                        const formattedDate = dateObj.toLocaleDateString('vi-VN');
-                                        summaryHtml += `<br><span class="pl-4">Hẹn ngày khảo sát:</span> ${formattedDate}`;
-                                    }
+                            });
+                            // Hide additional options for services without quantity
+                            const servicesWithoutQuantity = [4, 7, 12];
+                            servicesWithoutQuantity.forEach(index => {
+                                const additionalOptionsDiv = document.getElementById(`additional_options_${index}`);
+                                if (additionalOptionsDiv) {
+                                    additionalOptionsDiv.classList.add('hidden');
                                 }
-
-                                // Add speeds for dedicated data channel (dich_vu_8)
-                                if (key === 'dich_vu_8' && data[key] !== 'Không') {
-                                    const channelCount = parseInt(data[key].split(' ')[0]);
-                                    summaryHtml += `<br><span class="pl-4">Chi tiết:</span>`;
-                                    for (let i = 1; i <= channelCount; i++) {
-                                        const speedKey = `toc_do_kenh_${i}`;
-                                        const speedValue = data[speedKey];
-                                        summaryHtml += `<br><span class="pl-8">- Kênh ${i}: ${speedValue || 'Chưa nhập'} Mbps</span>`;
-                                    }
-                                }
-
-                                // Add reason for "Khác" selection
-                                if (data[key] === 'Khác') {
-                                    const reasonKey = key.replace('dich_vu', 'ly_do');
-                                    const reasonValue = data[reasonKey];
-                                    if (reasonValue) {
-                                        summaryHtml += `<br><span class="pl-4">Chi tiết:</span> ${reasonValue}`;
-                                    }
-                                }
-                                summaryHtml += `</p>`;
+                            });
+                            document.getElementById('date_picker_7').classList.add('hidden');
+                            speedInputs8.innerHTML = '';
+                            // Hide additional options for service 8
+                            const additionalOptions8Div = document.getElementById('additional_options_8');
+                            if (additionalOptions8Div) {
+                                additionalOptions8Div.classList.add('hidden');
                             }
-                        }
-                        summaryHtml += '</div>';
-
-                        surveySummary.innerHTML = summaryHtml;
-
-                        // Hiển thị hộp thoại thông báo thành công
-                        messageBox.style.display = 'block';
-                        messageBoxOverlay.style.display = 'block';
+                        });
                     } else {
-                        // Hiển thị thông báo lỗi
-                        alert('Lỗi: ' + result.message);
+                        // Hiển thị thông báo lỗi với SweetAlert2
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: result.message,
+                            confirmButtonText: 'Đóng',
+                            confirmButtonColor: '#ef4444'
+                        });
                     }
                 })
                 .catch(error => {
@@ -1219,41 +1074,17 @@
                     submitBtn.disabled = false;
 
                     console.error('Lỗi:', error);
-                    alert('Có lỗi xảy ra khi gửi dữ liệu. Vui lòng thử lại.');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi!',
+                        text: 'Có lỗi xảy ra khi gửi dữ liệu. Vui lòng thử lại.',
+                        confirmButtonText: 'Đóng',
+                        confirmButtonColor: '#ef4444'
+                    });
                 });
-        });
+                });
+                
 
-                closeBtn.addEventListener('click', function () {
-            // Đóng hộp thoại thông báo và overlay
-            messageBox.style.display = 'none';
-            messageBoxOverlay.style.display = 'none';
-            // Tùy chọn: Đặt lại form sau khi đóng
-            surveyForm.reset();
-            // Ẩn lại các ô nhập liệu số lượng/tốc độ
-            servicesWithQuantity.forEach(index => {
-                document.getElementById(`quantity_${index}`).classList.add('hidden');
-                // Hide additional options
-                const additionalOptionsDiv = document.getElementById(`additional_options_${index}`);
-                if (additionalOptionsDiv) {
-                    additionalOptionsDiv.classList.add('hidden');
-                }
-            });
-                    // Hide additional options for services without quantity
-                    const servicesWithoutQuantity = [4, 7, 12];
-                    servicesWithoutQuantity.forEach(index => {
-                        const additionalOptionsDiv = document.getElementById(`additional_options_${index}`);
-                        if (additionalOptionsDiv) {
-                            additionalOptionsDiv.classList.add('hidden');
-                        }
-            });
-            document.getElementById('date_picker_7').classList.add('hidden');
-            speedInputs8.innerHTML = '';
-                    // Hide additional options for service 8
-                    const additionalOptions8Div = document.getElementById('additional_options_8');
-                    if (additionalOptions8Div) {
-                        additionalOptions8Div.classList.add('hidden');
-                    }
-        });
     </script>
 </body>
 
