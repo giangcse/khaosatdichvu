@@ -41,7 +41,7 @@ Mở file `main.py` và cập nhật các thông tin sau:
 
 ```python
 SPREADSHEET_ID = 'YOUR_SPREADSHEET_ID'  # Thay bằng ID của Google Sheet
-WORKSHEET_NAME = 'Sheet1'  # Tên sheet trong Google Sheet
+WORKSHEET_NAME = 'Trang tính1'  # Tên sheet trong Google Sheet
 ```
 
 ### 3. Cấu trúc Google Sheet
@@ -50,30 +50,25 @@ Google Sheet cần có các cột sau (theo thứ tự):
 
 | Cột | Mô tả |
 |-----|-------|
-| A | Thời gian gửi |
-| B | Địa bàn |
-| C | Phường/Xã |
-| D | Biên lai điện tử |
-| E | Số lượng biên lai điện tử |
-| F | Kiosk AI |
-| G | Số lượng Kiosk AI |
-| H | Kiosk bắt số |
-| I | Số lượng Kiosk bắt số |
-| J | Hội nghị trực tuyến |
-| K | Hệ thống WiFi |
-| L | Camera Hành chính công |
-| M | Camera xã phường |
-| N | Lịch hẹn camera xã phường |
-| O | Kênh truyền số liệu chuyên dụng |
-| P | Tốc độ kênh 1 |
-| Q | Tốc độ kênh 2 |
-| R | Tốc độ kênh 3 |
-| S | Tốc độ kênh 4 |
-| T | Tốc độ kênh 5 |
-| U | AI cho Công chức viên chức |
-| V | Smart IR |
-| W | Firewall S-Gate |
-| X | VNPT-Money |
+| A | Tên phường xã |
+| B | Địa bàn VNPT |
+| C | Biên lai điện tử |
+| D | Kiosk AI |
+| E | Kiosk bắt số |
+| F | Hội nghị TT |
+| G | Hệ thống Wifi |
+| H | Camera HCC |
+| I | Camera xã phường |
+| J | Kênh TSL CD |
+| K | AI cho CCVC |
+| L | Smart IR |
+| M | Firewall S-Gate |
+| N | VNPT Money |
+
+**Lưu ý:** 
+- Các thông tin chi tiết như số lượng sẽ được ghi chú trong cột tương ứng (VD: "Có (5 cái)")
+- Thông tin lịch hẹn cho Camera xã phường sẽ được ghi chú (VD: "Hẹn ngày khảo sát (15/01/2024)")
+- Thông tin tốc độ kênh sẽ được ghi chú cho Kênh TSL CD (VD: "2 kênh - K1:10Mbps, K2:20Mbps")
 
 ## Chạy ứng dụng
 
@@ -99,6 +94,7 @@ Khaosat/
 
 - `GET /` - Trang chủ với form khảo sát
 - `POST /submit` - Gửi dữ liệu form lên Google Sheet
+- `GET /api/xaphuong` - Lấy dữ liệu xã phường từ file JSON
 - `GET /health` - Kiểm tra trạng thái server
 
 ## Xử lý lỗi

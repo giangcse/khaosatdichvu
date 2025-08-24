@@ -1,0 +1,24 @@
+[Unit]
+Description=Khaosat Survey Application
+After=network.target
+
+[Service]
+Type=notify
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/khaosat
+Environment=PATH=/var/www/khaosat/venv/bin
+Environment=FLASK_ENV=production
+Environment=SECRET_KEY=your-super-secret-key-change-this
+Environment=GOOGLE_SPREADSHEET_ID=1LjkkEfzYKyCCF2j23n_Ikdi_-5onXBUqtI6-3lYtrSk
+Environment=GOOGLE_WORKSHEET_NAME=TONGHOP
+ExecStart=/var/www/khaosat/venv/bin/gunicorn --config gunicorn.conf.py wsgi:app
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

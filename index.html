@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,6 +21,7 @@
             background-color: #f3f4f6;
             color: #1f2937;
         }
+
         /* Custom message box for submission confirmation */
         .message-box {
             position: fixed;
@@ -35,15 +37,18 @@
             z-index: 100;
             display: none;
         }
+
         .message-box h3 {
             font-size: 1.25rem;
             font-weight: 700;
             margin-bottom: 1rem;
             text-align: center;
         }
+
         .message-box p {
             margin-bottom: 0.5rem;
         }
+
         .message-box button {
             display: block;
             width: 100%;
@@ -55,9 +60,11 @@
             font-weight: 600;
             transition: background-color 0.3s;
         }
+
         .message-box button:hover {
             background-color: #4338ca;
         }
+
         .message-box-overlay {
             position: fixed;
             top: 0;
@@ -70,17 +77,22 @@
         }
 
         /* Improved styling for inputs and selects */
-        .form-input, .form-select {
+        .form-input,
+        .form-select {
             padding: 0.75rem 1rem !important;
             border-radius: 0.5rem !important;
             border-color: #d1d5db !important;
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
         }
-        .form-input:focus, .form-select:focus {
+
+        .form-input:focus,
+        .form-select:focus {
             outline: 2px solid transparent;
             outline-offset: 2px;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5); /* indigo-500 with opacity */
-            border-color: #6366f1 !important; /* indigo-500 */
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5);
+            /* indigo-500 with opacity */
+            border-color: #6366f1 !important;
+            /* indigo-500 */
         }
 
         /* Select2 specific styling */
@@ -93,20 +105,24 @@
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
             background-color: #fff !important;
         }
+
         .select2-container--default .select2-selection--single .select2-selection__arrow {
             height: 42px !important;
         }
+
         .select2-container--default .select2-selection--single .select2-selection__rendered {
             color: #4b5563 !important;
             line-height: 42px !important;
             padding-left: 1rem !important;
         }
+
         .select2-container--default.select2-container--open .select2-selection--single {
             border-color: #6366f1 !important;
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5) !important;
         }
     </style>
 </head>
+
 <body class="bg-gray-100 flex items-center justify-center min-h-screen p-4 relative">
 
     <!-- Scroll Progress Bar -->
@@ -129,20 +145,34 @@
                 <div class="space-y-4">
                     <div>
                         <label for="diaban" class="block text-sm font-medium text-gray-700">Địa bàn:</label>
-                        <select id="diaban" name="diaban" class="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+                        <select id="diaban" name="diaban"
+                            class="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            required>
                             <option value="">-- Chọn Địa bàn --</option>
                         </select>
                     </div>
                     <div>
                         <label for="xaphuong" class="block text-sm font-medium text-gray-700">Phường/Xã:</label>
-                        <!-- Thêm thẻ select cho Select2 -->
-                        <select id="xaphuong" name="xaphuong" class="mt-1 block w-full" required disabled>
-                            <option value="">-- Chọn Phường/Xã --</option>
-                        </select>
+                        <div class="flex space-x-2">
+                            <!-- Thêm thẻ select cho Select2 -->
+                            <select id="xaphuong" name="xaphuong" class="mt-1 block w-full" required disabled>
+                                <option value="">-- Chọn Phường/Xã --</option>
+                            </select>
+                            <!-- Nút reload dữ liệu -->
+                            <button type="button" id="reloadDataBtn"
+                                class="mt-1 px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                                title="Tải lại dữ liệu xã phường">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                                    </path>
+                                </svg>
+                            </button>
+                            </div>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Question: Biên lai điện tử -->
             <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
                 <p class="font-semibold text-gray-800 mb-4">1. Biên lai điện tử</p>
@@ -158,7 +188,8 @@
                 </div>
                 <div id="quantity_1" class="mt-4 hidden">
                     <label for="so_luong_1" class="block text-sm font-medium text-gray-700">Số lượng:</label>
-                    <input type="number" id="so_luong_1" name="so_luong_1" class="form-input mt-1 block w-full" placeholder="Nhập số lượng" min="1">
+                    <input type="number" id="so_luong_1" name="so_luong_1" class="form-input mt-1 block w-full" placeholder="Nhập số lượng"
+                        min="1">
                 </div>
             </div>
 
@@ -177,7 +208,8 @@
                 </div>
                 <div id="quantity_2" class="mt-4 hidden">
                     <label for="so_luong_2" class="block text-sm font-medium text-gray-700">Số lượng:</label>
-                    <input type="number" id="so_luong_2" name="so_luong_2" class="form-input mt-1 block w-full" placeholder="Nhập số lượng" min="1">
+                    <input type="number" id="so_luong_2" name="so_luong_2" class="form-input mt-1 block w-full" placeholder="Nhập số lượng"
+                        min="1">
                 </div>
             </div>
 
@@ -196,10 +228,11 @@
                 </div>
                 <div id="quantity_3" class="mt-4 hidden">
                     <label for="so_luong_3" class="block text-sm font-medium text-gray-700">Số lượng:</label>
-                    <input type="number" id="so_luong_3" name="so_luong_3" class="form-input mt-1 block w-full" placeholder="Nhập số lượng" min="1">
+                    <input type="number" id="so_luong_3" name="so_luong_3" class="form-input mt-1 block w-full" placeholder="Nhập số lượng"
+                        min="1">
                 </div>
             </div>
-            
+
             <!-- Question: Hội nghị trực tuyến -->
             <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
                 <p class="font-semibold text-gray-800 mb-4">4. Hội nghị trực tuyến</p>
@@ -231,7 +264,8 @@
                 <!-- Quantity input for this service -->
                 <div id="quantity_5" class="mt-4 hidden">
                     <label for="so_luong_5" class="block text-sm font-medium text-gray-700">Số lượng:</label>
-                    <input type="number" id="so_luong_5" name="so_luong_5" class="form-input mt-1 block w-full" placeholder="Nhập số lượng" min="1">
+                    <input type="number" id="so_luong_5" name="so_luong_5" class="form-input mt-1 block w-full" placeholder="Nhập số lượng"
+                        min="1">
                 </div>
             </div>
 
@@ -251,10 +285,11 @@
                 <!-- Quantity input for this service -->
                 <div id="quantity_6" class="mt-4 hidden">
                     <label for="so_luong_6" class="block text-sm font-medium text-gray-700">Số lượng:</label>
-                    <input type="number" id="so_luong_6" name="so_luong_6" class="form-input mt-1 block w-full" placeholder="Nhập số lượng" min="1">
+                    <input type="number" id="so_luong_6" name="so_luong_6" class="form-input mt-1 block w-full"
+                        placeholder="Nhập số lượng camera" min="1">
                 </div>
             </div>
-            
+
             <!-- Question: Camera xã phường -->
             <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
                 <p class="font-semibold text-gray-800 mb-4">7. Camera xã phường</p>
@@ -280,7 +315,8 @@
                 <p class="font-semibold text-gray-800 mb-4">8. Kênh truyền số liệu chuyên dụng</p>
                 <div class="flex items-center space-x-6 sm:space-x-10">
                     <label class="text-gray-700 cursor-pointer">
-                        <select name="dich_vu_8" id="dich_vu_8" class="form-select rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <select name="dich_vu_8" id="dich_vu_8"
+                            class="form-select rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                             <option value="Không">Không</option>
                             <option value="1 kênh">1 kênh</option>
                             <option value="2 kênh">2 kênh</option>
@@ -308,7 +344,8 @@
                 </div>
                 <div id="quantity_9" class="mt-4 hidden">
                     <label for="so_luong_9" class="block text-sm font-medium text-gray-700">Số lượng:</label>
-                    <input type="number" id="so_luong_9" name="so_luong_9" class="form-input mt-1 block w-full" placeholder="Nhập số lượng" min="1">
+                    <input type="number" id="so_luong_9" name="so_luong_9" class="form-input mt-1 block w-full" placeholder="Nhập số lượng"
+                        min="1">
                 </div>
             </div>
 
@@ -327,7 +364,8 @@
                 </div>
                 <div id="quantity_10" class="mt-4 hidden">
                     <label for="so_luong_10" class="block text-sm font-medium text-gray-700">Số lượng:</label>
-                    <input type="number" id="so_luong_10" name="so_luong_10" class="form-input mt-1 block w-full" placeholder="Nhập số lượng" min="1">
+                    <input type="number" id="so_luong_10" name="so_luong_10" class="form-input mt-1 block w-full"
+                        placeholder="Nhập số lượng" min="1">
                 </div>
             </div>
 
@@ -347,7 +385,8 @@
                 <!-- Quantity input for this service -->
                 <div id="quantity_11" class="mt-4 hidden">
                     <label for="so_luong_11" class="block text-sm font-medium text-gray-700">Số lượng:</label>
-                    <input type="number" id="so_luong_11" name="so_luong_11" class="form-input mt-1 block w-full" placeholder="Nhập số lượng" min="1">
+                    <input type="number" id="so_luong_11" name="so_luong_11" class="form-input mt-1 block w-full"
+                        placeholder="Nhập số lượng" min="1">
                 </div>
             </div>
 
@@ -368,7 +407,8 @@
 
             <!-- Submit Button -->
             <div class="pt-4">
-                <button type="submit" class="w-full bg-indigo-600 text-white font-semibold py-3 rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300">
+                <button type="submit"
+                    class="w-full bg-indigo-600 text-white font-semibold py-3 rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300">
                     Gửi
                 </button>
             </div>
@@ -376,7 +416,8 @@
     </div>
 
     <!-- Scroll to Top Button -->
-    <button id="scrollTopBtn" class="fixed bottom-4 right-4 z-40 bg-indigo-600 text-white p-3 rounded-full shadow-lg transition-all duration-300 opacity-0 pointer-events-none hover:bg-indigo-700">
+    <button id="scrollTopBtn"
+        class="fixed bottom-4 right-4 z-40 bg-indigo-600 text-white p-3 rounded-full shadow-lg transition-all duration-300 opacity-0 pointer-events-none hover:bg-indigo-700">
         <!-- Up arrow icon -->
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
@@ -397,33 +438,78 @@
         // Global variable to store loaded data
         let surveyData = [];
 
-        // Function to load data from the JSON file
+                // Function to load data from the API
         async function loadData() {
             try {
-                // Use the content fetcher to get the file content
-                const response = await fetch("xaphuong.json");
+                console.log("Đang tải dữ liệu xã phường từ API...");
+                const response = await fetch("/api/xaphuong");
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                surveyData = await response.json();
-                console.log("Data loaded successfully:", surveyData);
-                populateDiaban();
+                const result = await response.json();
+
+                if (result.success) {
+                    surveyData = result.data;
+                    console.log("✅ Dữ liệu xã phường đã được tải thành công:", surveyData.length, "bản ghi");
+                    populateDiaban();
+
+                    // Hiển thị thông báo thành công
+                    showNotification(`Dữ liệu xã phường đã được tải thành công (${surveyData.length} bản ghi)`, "success");
+                } else {
+                    throw new Error(result.message || 'Lỗi không xác định');
+                }
             } catch (error) {
-                console.error("Error loading data:", error);
-                // Handle error gracefully, maybe show a message to the user
-            }
+                                        console.error("❌ Lỗi khi tải dữ liệu xã phường:", error);
+                                        showNotification("Không thể tải dữ liệu xã phường. Vui lòng thử lại.", "error");
+
+                                        // Fallback: tạo dữ liệu mẫu nếu không load được
+                                        surveyData = [
+                                            { diaban: "Vĩnh Long", xaphuong: "Xã Cái Nhum" },
+                                            { diaban: "Vĩnh Long", xaphuong: "Xã Tân Long Hội" },
+                                            { diaban: "Vĩnh Long", xaphuong: "Xã Nhơn Phú" }
+                                        ];
+                                        populateDiaban();
+                                    }
+                                }
+
+                                // Function to show notification
+                                function showNotification(message, type = 'info') {
+                                    const notification = document.createElement('div');
+                                    notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${type === 'success' ? 'bg-green-500 text-white' :
+                                        type === 'error' ? 'bg-red-500 text-white' :
+                                            'bg-blue-500 text-white'
+                                        }`;
+                                    notification.textContent = message;
+
+                                    document.body.appendChild(notification);
+
+                                    // Auto remove after 3 seconds
+                                    setTimeout(() => {
+                                        if (notification.parentNode) {
+                                            notification.parentNode.removeChild(notification);
+                                        }
+                        }, 3000);
         }
 
         // Function to populate the diaban dropdown
         function populateDiaban() {
             const diabanSelect = document.getElementById('diaban');
+
+            // Clear existing options
+            diabanSelect.innerHTML = '<option value="">-- Chọn Địa bàn --</option>';
+
+            // Get unique diaban values
             const diabanSet = new Set(surveyData.map(item => item.diaban));
-            diabanSet.forEach(diaban => {
+            const diabanArray = Array.from(diabanSet).sort();
+
+            diabanArray.forEach(diaban => {
                 const option = document.createElement('option');
                 option.value = diaban;
                 option.textContent = diaban;
                 diabanSelect.appendChild(option);
             });
+
+            console.log(`📋 Đã load ${diabanArray.length} địa bàn:`, diabanArray);
         }
 
         const surveyForm = document.getElementById('surveyForm');
@@ -436,14 +522,15 @@
         const progressBar = document.getElementById('progressBar');
         const scrollTopBtn = document.getElementById('scrollTopBtn');
         const diabanSelect = document.getElementById('diaban');
+                const reloadDataBtn = document.getElementById('reloadDataBtn');
 
         // Initialize Select2 on the xaphuong select element
-        $(document).ready(function() {
+                $(document).ready(function () {
             $('#xaphuong').select2({
                 placeholder: '-- Chọn Phường/Xã --',
                 allowClear: true,
                 language: {
-                    noResults: function() {
+                    noResults: function () {
                         return "Không tìm thấy kết quả";
                     }
                 },
@@ -457,24 +544,29 @@
         diabanSelect.addEventListener('change', () => {
             const selectedDiaban = diabanSelect.value;
             const xaphuongSelect = $('#xaphuong');
-            
+
             xaphuongSelect.val(null).trigger('change'); // Clear current selection
-            
+
             if (selectedDiaban) {
                 const filteredXaphuong = surveyData.filter(item => item.diaban === selectedDiaban);
                 const formattedData = filteredXaphuong.map(item => ({
                     id: item.xaphuong,
                     text: item.xaphuong
                 }));
-                
+
+                console.log(`🏘️ Đã load ${formattedData.length} xã/phường cho địa bàn "${selectedDiaban}"`);
+
                 // Update data for Select2
                 xaphuongSelect.empty().select2({
                     data: formattedData,
-                    placeholder: '-- Chọn Phường/Xã --',
+                    placeholder: `-- Chọn Phường/Xã (${formattedData.length} địa điểm) --`,
                     allowClear: true,
                     width: '100%',
                 });
                 xaphuongSelect.prop('disabled', false);
+
+                // Hiển thị thông báo
+                showNotification(`Đã load ${formattedData.length} xã/phường cho ${selectedDiaban}`, "info");
             } else {
                 xaphuongSelect.empty().select2({
                     data: [],
@@ -511,7 +603,7 @@
                 });
             }
         });
-        
+
         // Logic for showing/hiding the date picker for question 7
         const dichVu7Yes = document.querySelector('input[name="dich_vu_7"][value="Có"]');
         const dichVu7No = document.querySelector('input[name="dich_vu_7"][value="Không"]');
@@ -591,9 +683,20 @@
                 top: 0,
                 behavior: 'smooth'
             });
+
+            // Add event listener for reload button
+            reloadDataBtn.addEventListener('click', () => {
+                reloadDataBtn.disabled = true;
+                reloadDataBtn.innerHTML = '<svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+
+                loadData().finally(() => {
+                    reloadDataBtn.disabled = false;
+                    reloadDataBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>';
+                });
+            });
         });
 
-        surveyForm.addEventListener('submit', function(event) {
+                surveyForm.addEventListener('submit', function (event) {
             // Ngăn chặn hành vi gửi form mặc định
             event.preventDefault();
 
@@ -618,88 +721,91 @@
                 },
                 body: JSON.stringify(data)
             })
-            .then(response => response.json())
-            .then(result => {
-                // Khôi phục nút submit
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
+                .then(response => response.json())
+                .then(result => {
+                    // Khôi phục nút submit
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
 
-                if (result.success) {
-                    // Tạo nội dung tóm tắt
-                    let summaryHtml = '<div class="text-sm space-y-2">';
-                    summaryHtml += `<p><span class="font-medium">Địa bàn:</span> ${data.diaban}</p>`;
-                    summaryHtml += `<p><span class="font-medium">Phường/Xã:</span> ${data.xaphuong}</p>`;
-                    
-                    const services = {
-                        'dich_vu_1': 'Biên lai điện tử',
-                        'dich_vu_2': 'Kiosk AI',
-                        'dich_vu_3': 'Kiosk bắt số',
-                        'dich_vu_4': 'Hội nghị trực tuyến',
-                        'dich_vu_5': 'Hệ thống WiFi',
-                        'dich_vu_6': 'Camera Hành chính công',
-                        'dich_vu_7': 'Camera xã phường',
-                        'dich_vu_8': 'Kênh truyền số liệu chuyên dụng',
-                        'dich_vu_9': 'AI cho Công chức viên chức',
-                        'dich_vu_10': 'Smart IR',
-                        'dich_vu_11': 'Firewall S-Gate',
-                        'dich_vu_12': 'VNPT-Money',
-                    };
+                    if (result.success) {
+                        // Tạo nội dung tóm tắt
+                        let summaryHtml = '<div class="text-sm space-y-2">';
+                        summaryHtml += `<p><span class="font-medium">Địa bàn:</span> ${data.diaban}</p>`;
+                        summaryHtml += `<p><span class="font-medium">Phường/Xã:</span> ${data.xaphuong}</p>`;
 
-                    for (const key in services) {
-                        if (data[key]) {
-                            summaryHtml += `<p><span class="font-medium">${services[key]}:</span> ${data[key]}`;
-                            
-                            // Add quantity for services with radio buttons
-                            const quantityKey = key.replace('dich_vu', 'so_luong');
-                            const quantityValue = data[quantityKey];
-                            if (servicesWithQuantity.includes(parseInt(key.split('_')[2])) && quantityValue) {
-                                 summaryHtml += ` (Số lượng: ${quantityValue})`;
-                            }
+                        const services = {
+                            'dich_vu_1': 'Biên lai điện tử',
+                            'dich_vu_2': 'Kiosk AI',
+                            'dich_vu_3': 'Kiosk bắt số',
+                            'dich_vu_4': 'Hội nghị trực tuyến',
+                            'dich_vu_5': 'Hệ thống WiFi',
+                            'dich_vu_6': 'Camera Hành chính công',
+                            'dich_vu_7': 'Camera xã phường',
+                            'dich_vu_8': 'Kênh truyền số liệu chuyên dụng',
+                            'dich_vu_9': 'AI cho Công chức viên chức',
+                            'dich_vu_10': 'Smart IR',
+                            'dich_vu_11': 'Firewall S-Gate',
+                            'dich_vu_12': 'VNPT-Money',
+                        };
 
-                            // Add date for Camera xã phường
-                            if (key === 'dich_vu_7' && data[key] === 'Có') {
-                                 const dateValue = data['lich_hen_7'];
-                                 if (dateValue) {
-                                     summaryHtml += `<br><span class="pl-4">Lịch hẹn:</span> ${dateValue}`;
-                                 }
-                            }
+                        for (const key in services) {
+                            if (data[key]) {
+                                summaryHtml += `<p><span class="font-medium">${services[key]}:</span> ${data[key]}`;
 
-                            // Add speeds for dedicated data channel (dich_vu_8)
-                            if (key === 'dich_vu_8' && data[key] !== 'Không') {
-                                const channelCount = parseInt(data[key].split(' ')[0]);
-                                summaryHtml += `<br><span class="pl-4">Chi tiết:</span>`;
-                                for (let i = 1; i <= channelCount; i++) {
-                                    const speedKey = `toc_do_kenh_${i}`;
-                                    const speedValue = data[speedKey];
-                                    summaryHtml += `<br><span class="pl-8">- Kênh ${i}: ${speedValue || 'Chưa nhập'} Mbps</span>`;
+                                // Add quantity for services with radio buttons
+                                const quantityKey = key.replace('dich_vu', 'so_luong');
+                                const quantityValue = data[quantityKey];
+                                if (servicesWithQuantity.includes(parseInt(key.split('_')[2])) && quantityValue) {
+                                    summaryHtml += ` (Số lượng: ${quantityValue})`;
                                 }
+
+                                // Add date for Camera xã phường
+                                if (key === 'dich_vu_7' && data[key] === 'Có') {
+                                    const dateValue = data['lich_hen_7'];
+                                    if (dateValue) {
+                                        // Chuyển đổi format ngày từ YYYY-MM-DD sang dd/mm/YYYY
+                                        const dateObj = new Date(dateValue);
+                                        const formattedDate = dateObj.toLocaleDateString('vi-VN');
+                                        summaryHtml += `<br><span class="pl-4">Hẹn ngày khảo sát:</span> ${formattedDate}`;
+                                    }
+                                }
+
+                                // Add speeds for dedicated data channel (dich_vu_8)
+                                if (key === 'dich_vu_8' && data[key] !== 'Không') {
+                                    const channelCount = parseInt(data[key].split(' ')[0]);
+                                    summaryHtml += `<br><span class="pl-4">Chi tiết:</span>`;
+                                    for (let i = 1; i <= channelCount; i++) {
+                                        const speedKey = `toc_do_kenh_${i}`;
+                                        const speedValue = data[speedKey];
+                                        summaryHtml += `<br><span class="pl-8">- Kênh ${i}: ${speedValue || 'Chưa nhập'} Mbps</span>`;
+                                    }
+                                }
+                                summaryHtml += `</p>`;
                             }
-                            summaryHtml += `</p>`;
                         }
+                        summaryHtml += '</div>';
+
+                        surveySummary.innerHTML = summaryHtml;
+
+                        // Hiển thị hộp thoại thông báo thành công
+                        messageBox.style.display = 'block';
+                        messageBoxOverlay.style.display = 'block';
+                    } else {
+                        // Hiển thị thông báo lỗi
+                        alert('Lỗi: ' + result.message);
                     }
-                    summaryHtml += '</div>';
+                })
+                .catch(error => {
+                    // Khôi phục nút submit
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
 
-                    surveySummary.innerHTML = summaryHtml;
-
-                    // Hiển thị hộp thoại thông báo thành công
-                    messageBox.style.display = 'block';
-                    messageBoxOverlay.style.display = 'block';
-                } else {
-                    // Hiển thị thông báo lỗi
-                    alert('Lỗi: ' + result.message);
-                }
-            })
-            .catch(error => {
-                // Khôi phục nút submit
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-                
-                console.error('Lỗi:', error);
-                alert('Có lỗi xảy ra khi gửi dữ liệu. Vui lòng thử lại.');
-            });
+                    console.error('Lỗi:', error);
+                    alert('Có lỗi xảy ra khi gửi dữ liệu. Vui lòng thử lại.');
+                });
         });
 
-        closeBtn.addEventListener('click', function() {
+                closeBtn.addEventListener('click', function () {
             // Đóng hộp thoại thông báo và overlay
             messageBox.style.display = 'none';
             messageBoxOverlay.style.display = 'none';
@@ -714,4 +820,5 @@
         });
     </script>
 </body>
+
 </html>
