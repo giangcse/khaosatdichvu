@@ -106,62 +106,6 @@
             background-color: #fff !important;
         }
 
-        /* Notification styling */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 1rem 1.5rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-            z-index: 9999;
-            font-weight: 500;
-            font-size: 0.95rem;
-            max-width: 400px;
-            animation: slideInRight 0.3s ease-out;
-            backdrop-filter: blur(10px);
-        }
-
-        .notification.success {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            border-left: 4px solid #047857;
-        }
-
-        .notification.error {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-            border-left: 4px solid #b91c1c;
-        }
-
-        .notification.info {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            color: white;
-            border-left: 4px solid #1d4ed8;
-        }
-
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes slideOutRight {
-            from {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-        }
-
         .select2-container--default .select2-selection--single .select2-selection__arrow {
             height: 42px !important;
         }
@@ -573,25 +517,23 @@
                                     }
                                 }
 
-                                                // Function to show notification
-                                                function showNotification(message, type = 'info') {
-                                                    const notification = document.createElement('div');
-                                                notification.className = `notification ${type}`;
-                                                notification.textContent = message;
+                                    // Function to show notification
+                                    function showNotification(message, type = 'info') {
+                                        const notification = document.createElement('div');
+                                    notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${type === 'success' ? 'bg-green-500 text-white' :
+                                        type === 'error' ? 'bg-red-500 text-white' :
+                                            'bg-blue-500 text-white'
+                                        }`;
+                                    notification.textContent = message;
 
-                                                document.body.appendChild(notification);
+                                    document.body.appendChild(notification);
 
-                                                // Auto remove after 4 seconds with smooth animation
-                                                setTimeout(() => {
-                                                    if (notification.parentNode) {
-                                                        notification.style.animation = 'slideOutRight 0.3s ease-out';
-                                                        setTimeout(() => {
-                                                            if (notification.parentNode) {
-                                                                notification.parentNode.removeChild(notification);
-                                                            }
-                    }, 300);
-                }
-            }, 4000);
+                                    // Auto remove after 3 seconds
+                                    setTimeout(() => {
+                                        if (notification.parentNode) {
+                                            notification.parentNode.removeChild(notification);
+                                        }
+                                    }, 3000);
         }
 
         // Function to populate the diaban dropdown
@@ -810,11 +752,6 @@
                 data[key] = value;
             });
 
-                    // Hiển thị thông báo xác nhận
-                    if (!confirm('Bạn có chắc chắn muốn gửi dữ liệu khảo sát này?')) {
-                        return;
-                    }
-
             // Hiển thị loading
             const submitBtn = surveyForm.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
@@ -836,9 +773,6 @@
                     submitBtn.disabled = false;
 
                     if (result.success) {
-                        // Hiển thị thông báo thành công
-                        showNotification('✅ Dữ liệu đã được gửi thành công!', 'success');
-                        
                         // Tạo nội dung tóm tắt
                         let summaryHtml = '<div class="text-sm space-y-2">';
                         summaryHtml += `<p><span class="font-medium">Địa bàn:</span> ${data.diaban}</p>`;
@@ -905,7 +839,7 @@
                         messageBoxOverlay.style.display = 'block';
                     } else {
                         // Hiển thị thông báo lỗi
-                        showNotification('❌ Lỗi: ' + result.message, 'error');
+                        alert('Lỗi: ' + result.message);
                     }
                 })
                 .catch(error => {
@@ -914,7 +848,7 @@
                     submitBtn.disabled = false;
 
                     console.error('Lỗi:', error);
-                    showNotification('❌ Có lỗi xảy ra khi gửi dữ liệu. Vui lòng thử lại.', 'error');
+                    alert('Có lỗi xảy ra khi gửi dữ liệu. Vui lòng thử lại.');
                 });
         });
 
