@@ -33,17 +33,21 @@ def get_google_sheets_client():
 
 def _format_channel_speeds(data):
     """Format thông tin tốc độ kênh"""
-    if data.get("dich_vu_8") == "Không":
+    service_value = data.get("dich_vu_8", "")
+    if service_value in ["Không", "Khác"] or not service_value:
         return None
 
-    channel_count = int(data.get("dich_vu_8", "0").split(" ")[0])
-    speeds = []
-    for i in range(1, channel_count + 1):
-        speed = data.get(f"toc_do_kenh_{i}", "")
-        if speed:
-            speeds.append(f"K{i}:{speed}Mbps")
+    try:
+        channel_count = int(service_value.split(" ")[0])
+        speeds = []
+        for i in range(1, channel_count + 1):
+            speed = data.get(f"toc_do_kenh_{i}", "")
+            if speed:
+                speeds.append(f"K{i}:{speed}Mbps")
 
-    return ", ".join(speeds) if speeds else None
+        return ", ".join(speeds) if speeds else None
+    except (ValueError, IndexError):
+        return None
 
 
 def submit_to_google_sheet(data):
@@ -61,8 +65,18 @@ def submit_to_google_sheet(data):
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         # Hàm helper để tạo giá trị với thông tin chi tiết
-        def format_service_value(service_value, quantity=None, additional_info=None):
-            if not service_value or service_value == "Không":
+        def format_service_value(
+            service_value, quantity=None, additional_info=None, reason=None
+        ):
+            if not service_value:
+                return ""
+
+            # Xử lý trường hợp "Khác" với lý do
+            if service_value == "Khác" and reason:
+                return f"Khác ({reason})"
+            elif service_value == "Khác":
+                return "Khác"
+            elif service_value == "Không":
                 return "Không"
 
             result = service_value
@@ -73,8 +87,16 @@ def submit_to_google_sheet(data):
             return result
 
         # Hàm helper đặc biệt cho Camera xã phường
-        def format_camera_value(service_value, appointment_date=None):
-            if not service_value or service_value == "Không":
+        def format_camera_value(service_value, appointment_date=None, reason=None):
+            if not service_value:
+                return ""
+
+            # Xử lý trường hợp "Khác" với lý do
+            if service_value == "Khác" and reason:
+                return f"Khác ({reason})"
+            elif service_value == "Khác":
+                return "Khác"
+            elif service_value == "Không":
                 return "Không"
 
             if service_value == "Có" and appointment_date:
@@ -98,43 +120,74 @@ def submit_to_google_sheet(data):
             data.get("chuc_vu", ""),  # Chức vụ
             data.get("so_dien_thoai_dm", ""),  # Số điện thoại đầu mối
             format_service_value(
-                data.get("dich_vu_1", ""), data.get("so_luong_1", "")
+                data.get("dich_vu_1", ""),
+                data.get("so_luong_1", ""),
+                None,
+                data.get("ly_do_1", ""),
             ),  # Biên lai điện tử
             format_service_value(
-                data.get("dich_vu_2", ""), data.get("so_luong_2", "")
+                data.get("dich_vu_2", ""),
+                data.get("so_luong_2", ""),
+                None,
+                data.get("ly_do_2", ""),
             ),  # Kiosk AI
             format_service_value(
-                data.get("dich_vu_3", ""), data.get("so_luong_3", "")
+                data.get("dich_vu_3", ""),
+                data.get("so_luong_3", ""),
+                None,
+                data.get("ly_do_3", ""),
             ),  # Kiosk bắt số
-            data.get("dich_vu_4", ""),  # Hội nghị TT
             format_service_value(
-                data.get("dich_vu_5", ""), data.get("so_luong_5", "")
+                data.get("dich_vu_4", ""), None, None, data.get("ly_do_4", "")
+            ),  # Hội nghị TT
+            format_service_value(
+                data.get("dich_vu_5", ""),
+                data.get("so_luong_5", ""),
+                None,
+                data.get("ly_do_5", ""),
             ),  # Hệ thống Wifi
             format_service_value(
-                data.get("dich_vu_6", ""), data.get("so_luong_6", "")
+                data.get("dich_vu_6", ""),
+                data.get("so_luong_6", ""),
+                None,
+                data.get("ly_do_6", ""),
             ),  # Camera HCC
             format_camera_value(
-                data.get("dich_vu_7", ""), data.get("lich_hen_7", "")
+                data.get("dich_vu_7", ""),
+                data.get("lich_hen_7", ""),
+                data.get("ly_do_7", ""),
             ),  # Camera xã phường
             format_service_value(
                 data.get("dich_vu_8", ""),
                 None,
                 (
                     _format_channel_speeds(data)
-                    if data.get("dich_vu_8") != "Không"
+                    if data.get("dich_vu_8") not in ["Không", "Khác"]
                     else None
                 ),
+                data.get("ly_do_8", ""),
             ),  # Kênh TSL CD
             format_service_value(
-                data.get("dich_vu_9", ""), data.get("so_luong_9", "")
+                data.get("dich_vu_9", ""),
+                data.get("so_luong_9", ""),
+                None,
+                data.get("ly_do_9", ""),
             ),  # AI cho CCVC
             format_service_value(
-                data.get("dich_vu_10", ""), data.get("so_luong_10", "")
+                data.get("dich_vu_10", ""),
+                data.get("so_luong_10", ""),
+                None,
+                data.get("ly_do_10", ""),
             ),  # Smart IR
             format_service_value(
-                data.get("dich_vu_11", ""), data.get("so_luong_11", "")
+                data.get("dich_vu_11", ""),
+                data.get("so_luong_11", ""),
+                None,
+                data.get("ly_do_11", ""),
             ),  # Firewall S-Gate
-            data.get("dich_vu_12", ""),  # VNPT Money
+            format_service_value(
+                data.get("dich_vu_12", ""), None, None, data.get("ly_do_12", "")
+            ),  # VNPT Money
         ]
 
         # Thêm row mới vào sheet
