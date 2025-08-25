@@ -245,70 +245,70 @@ def manifest():
         return "Manifest not found", 404
 
 
-@app.route("/map")
-def map_page():
-    """Trang bản đồ heatmap"""
-    try:
-        with open("map.html", "r", encoding="utf-8") as f:
-            return f.read()
-    except FileNotFoundError:
-        return "Map page not found", 404
+# @app.route("/map")
+# def map_page():
+#     """Trang bản đồ heatmap"""
+#     try:
+#         with open("map.html", "r", encoding="utf-8") as f:
+#             return f.read()
+#     except FileNotFoundError:
+#         return "Map page not found", 404
 
 
-@app.route("/api/map-data")
-def get_map_data():
-    """API endpoint để lấy dữ liệu cho bản đồ heatmap"""
-    try:
-        # Load boundary data from GeoJSON file
-        with open("vinh_long_boundaries.geojson", "r", encoding="utf-8") as f:
-            boundaries_data = json.load(f)
+# @app.route("/api/map-data")
+# def get_map_data():
+#     """API endpoint để lấy dữ liệu cho bản đồ heatmap"""
+#     try:
+#         # Load boundary data from GeoJSON file
+#         with open("vinh_long_boundaries.geojson", "r", encoding="utf-8") as f:
+#             boundaries_data = json.load(f)
 
-        # Get real survey data from Google Sheets
-        # Falls back to sample data if Google Sheets is not available
-        surveys_data = get_survey_data_from_sheets()
+#         # Get real survey data from Google Sheets
+#         # Falls back to sample data if Google Sheets is not available
+#         surveys_data = get_survey_data_from_sheets()
 
-        # Process areas from boundaries
-        areas = []
-        for feature in boundaries_data["features"]:
-            # Get area name from GeoJSON properties
-            area_name = feature["properties"].get("ten_xa", "")
-            province_name = feature["properties"].get("ten_tinh", "")
+#         # Process areas from boundaries
+#         areas = []
+#         for feature in boundaries_data["features"]:
+#             # Get area name from GeoJSON properties
+#             area_name = feature["properties"].get("ten_xa", "")
+#             province_name = feature["properties"].get("ten_tinh", "")
 
-            # Handle MultiPolygon geometry
-            geometry = feature["geometry"]
-            if geometry["type"] == "MultiPolygon":
-                # Use the first polygon from MultiPolygon
-                coordinates = geometry["coordinates"][0][0]
-            elif geometry["type"] == "Polygon":
-                # Use the first ring of polygon
-                coordinates = geometry["coordinates"][0]
-            else:
-                continue  # Skip unsupported geometry types
+#             # Handle MultiPolygon geometry
+#             geometry = feature["geometry"]
+#             if geometry["type"] == "MultiPolygon":
+#                 # Use the first polygon from MultiPolygon
+#                 coordinates = geometry["coordinates"][0][0]
+#             elif geometry["type"] == "Polygon":
+#                 # Use the first ring of polygon
+#                 coordinates = geometry["coordinates"][0]
+#             else:
+#                 continue  # Skip unsupported geometry types
 
-            if area_name:
-                areas.append(
-                    {
-                        "name": area_name,
-                        "coordinates": coordinates,
-                        "province": province_name,
-                    }
-                )
+#             if area_name:
+#                 areas.append(
+#                     {
+#                         "name": area_name,
+#                         "coordinates": coordinates,
+#                         "province": province_name,
+#                     }
+#                 )
 
-        return jsonify(
-            {
-                "success": True,
-                "areas": areas,
-                "surveys": surveys_data,
-                "total_areas": len(areas),
-                "surveyed_areas": len(
-                    [k for k, v in surveys_data.items() if v is not None]
-                ),
-            }
-        )
+#         return jsonify(
+#             {
+#                 "success": True,
+#                 "areas": areas,
+#                 "surveys": surveys_data,
+#                 "total_areas": len(areas),
+#                 "surveyed_areas": len(
+#                     [k for k, v in surveys_data.items() if v is not None]
+#                 ),
+#             }
+#         )
 
-    except Exception as e:
-        print(f"Lỗi khi lấy dữ liệu bản đồ: {e}")
-        return jsonify({"success": False, "message": f"Lỗi server: {str(e)}"}), 500
+#     except Exception as e:
+#         print(f"Lỗi khi lấy dữ liệu bản đồ: {e}")
+#         return jsonify({"success": False, "message": f"Lỗi server: {str(e)}"}), 500
 
 
 def get_survey_data_from_sheets():
