@@ -168,6 +168,16 @@
                                     </path>
                                 </svg>
                             </button>
+                            <button type="button" onclick="window.open('/map', '_blank')"
+                                class="mt-1 px-3 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
+                                title="Xem bản đồ heatmap">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z">
+                                    </path>
+                                </svg>
+                            </button>
                             </div>
                     </div>
                 </div>
@@ -1167,6 +1177,11 @@
                                             }
                                         } catch (offlineError) {
                                             console.error('Lỗi lưu offline:', offlineError);
+
+                        // Reset nút submit trong trường hợp lỗi
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+
                                             Swal.fire({
                                                 icon: 'error',
                                                 title: 'Lỗi!',
@@ -1176,6 +1191,10 @@
                                             });
                                         }
                                     } else {
+                    // Reset nút submit trong trường hợp lỗi general
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    
                                         Swal.fire({
                                             icon: 'error',
                                             title: 'Lỗi!',
@@ -1189,6 +1208,13 @@
 
                             // Function to reset form after successful submit
                             function resetFormAfterSubmit() {
+                                // Reset submit button state
+                                const submitBtn = surveyForm.querySelector('button[type="submit"]');
+                                if (submitBtn) {
+                                    submitBtn.innerHTML = 'Gửi';
+                                    submitBtn.disabled = false;
+                                }
+                                
                                 // Reset form
                                 surveyForm.reset();
 
@@ -1254,13 +1280,7 @@
                         data[key] = value;
                     });
 
-                    // Hiển thị loading
-                    const submitBtn = surveyForm.querySelector('button[type="submit"]');
-                    const originalText = submitBtn.innerHTML;
-                    submitBtn.innerHTML = '<span class="inline-flex items-center"><svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Đang gửi...</span>';
-                    submitBtn.disabled = true;
-
-                    // Gửi dữ liệu với hỗ trợ offline
+        // Gửi dữ liệu với hỗ trợ offline (submitSurveyData sẽ tự xử lý loading state)
                     submitSurveyData(data);
                 });
                 

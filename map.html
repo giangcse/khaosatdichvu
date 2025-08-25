@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bản đồ Khảo sát Dịch vụ - Vĩnh Long, Bến Tre, Trà Vinh</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
+        
+        .info-panel {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 300px;
+        }
+        
+        .legend {
+            position: absolute;
+            bottom: 30px;
+            right: 10px;
+            z-index: 1000;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 8px;
+            border: 1px solid #ccc;
+        }
+        
+        .service-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .service-item {
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-bottom: 2px;
+            font-size: 12px;
+        }
+        
+        .service-yes {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        
+        .service-no {
+            background-color: #fef2f2;
+            color: #dc2626;
+        }
+        
+        .service-partial {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+        
+        .loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2000;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner">
+        <div class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-3">
+            <svg class="animate-spin w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span class="text-gray-700">Đang tải bản đồ...</span>
+        </div>
+    </div>
+
+    <!-- Map Container -->
+    <div id="map"></div>
+    
+    <!-- Info Panel -->
+    <div id="infoPanel" class="info-panel hidden">
+        <div class="p-4">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="font-semibold text-gray-800" id="areaName">Chọn một khu vực</h3>
+                <button onclick="closeInfoPanel()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="mb-3">
+                <div class="flex items-center space-x-2 mb-2">
+                    <div class="w-4 h-4 rounded-full" id="statusColor"></div>
+                    <span class="text-sm font-medium" id="statusText">Chưa có dữ liệu</span>
+                </div>
+                <div class="text-xs text-gray-600">
+                    <span id="serviceStats">0/12 dịch vụ</span>
+                </div>
+            </div>
+            
+            <div class="service-list" id="serviceList">
+                <!-- Services will be populated here -->
+            </div>
+            
+            <div class="mt-3 pt-3 border-t">
+                <button onclick="viewDetails()" class="w-full bg-blue-500 text-white px-3 py-2 rounded text-sm hover:bg-blue-600 transition-colors">
+                    Xem chi tiết khảo sát
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Legend -->
+    <div class="legend">
+        <h4 class="font-semibold text-gray-800 mb-3 text-sm">Chú thích</h4>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #10b981;"></div>
+            <span class="text-xs">Đầy đủ dịch vụ (80-100%)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #f59e0b;"></div>
+            <span class="text-xs">Một phần dịch vụ (40-79%)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #ef4444;"></div>
+            <span class="text-xs">Thiếu dịch vụ (0-39%)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #9ca3af;"></div>
+            <span class="text-xs">Chưa khảo sát</span>
+        </div>
+    </div>
+    
+    <!-- Control Panel -->
+    <div class="absolute top-4 left-4 z-1000 bg-white rounded-lg shadow-lg p-4">
+        <h2 class="font-bold text-lg text-gray-800 mb-2">Bản đồ Khảo sát Dịch vụ</h2>
+        <p class="text-sm text-gray-600 mb-3">Vĩnh Long, Bến Tre, Trà Vinh</p>
+        
+        <div class="space-y-2">
+            <button onclick="refreshData()" class="w-full bg-green-500 text-white px-3 py-2 rounded text-sm hover:bg-green-600 transition-colors flex items-center justify-center space-x-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                <span>Làm mới dữ liệu</span>
+            </button>
+            
+            <button onclick="goHome()" class="w-full bg-blue-500 text-white px-3 py-2 rounded text-sm hover:bg-blue-600 transition-colors">
+                Về trang khảo sát
+            </button>
+        </div>
+        
+        <div class="mt-3 pt-3 border-t text-xs text-gray-500">
+            <div>Cập nhật: <span id="lastUpdate">--</span></div>
+            <div>Tổng khảo sát: <span id="totalSurveys">0</span></div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script>
+        // Global variables
+        let map;
+        let currentAreaData = null;
+        let surveysData = {};
+        let heatmapLayerGroup = null; // Group để quản lý các polygon layers
+        
+        // Service names mapping
+        const serviceNames = {
+            'dich_vu_1': 'Biên lai điện tử',       // Column H
+            'dich_vu_2': 'Kiosk AI',               // Column I
+            'dich_vu_3': 'Kiosk bắt số',           // Column J
+            'dich_vu_4': 'Hội nghị TT',            // Column K
+            'dich_vu_5': 'Hệ thống Wifi',          // Column L
+            'dich_vu_6': 'Camera HCC',             // Column M
+            'dich_vu_7': 'Camera xã phường',       // Column N
+            'dich_vu_8': 'Kênh TSL CD',            // Column O
+            'dich_vu_9': 'AI cho CCVC',            // Column P
+            'dich_vu_10': 'Smart IR',              // Column Q
+            'dich_vu_11': 'Firewall S-Gate',       // Column R
+            'dich_vu_12': 'VNPT Money'             // Column S
+        };
+        
+        // Initialize map
+        function initMap() {
+            // Center between Vinh Long, Ben Tre, and Tra Vinh provinces
+            map = L.map('map').setView([10.1400, 106.1500], 9);
+            
+            // Add tile layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+            
+            // Initialize heatmap layer group
+            heatmapLayerGroup = L.layerGroup().addTo(map);
+            
+            // Load survey data and boundaries
+            loadSurveyData();
+        }
+        
+        // Load survey data from API
+        async function loadSurveyData() {
+            try {
+                const response = await fetch('/api/map-data');
+                const data = await response.json();
+                
+                if (data.success) {
+                    surveysData = data.surveys;
+                    updateLastUpdate();
+                    updateTotalSurveys();
+                    createHeatmapLayers(data.areas);
+                } else {
+                    console.error('Failed to load survey data:', data.message);
+                    showError('Không thể tải dữ liệu khảo sát');
+                }
+            } catch (error) {
+                console.error('Error loading survey data:', error);
+                showError('Lỗi kết nối khi tải dữ liệu');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // Create heatmap layers based on survey data
+        function createHeatmapLayers(areas) {
+            // Clear existing heatmap layers first
+            if (heatmapLayerGroup) {
+                heatmapLayerGroup.clearLayers();
+                // Cleared existing heatmap layers
+            }
+            
+            areas.forEach((area, index) => {
+                const survey = surveysData[area.name];
+                const color = getHeatmapColor(survey);
+                
+                // Validate coordinates
+                if (!area.coordinates || !Array.isArray(area.coordinates) || area.coordinates.length === 0) {
+                    console.warn(`⚠️ Invalid coordinates for area: ${area.name}`);
+                    return;
+                }
+                
+                // Convert coordinates from [lng, lat] to [lat, lng] for Leaflet
+                const leafletCoords = area.coordinates.map(coord => {
+                    if (!Array.isArray(coord) || coord.length < 2) {
+                        console.warn(`⚠️ Invalid coordinate pair for area: ${area.name}`, coord);
+                        return [0, 0]; // fallback
+                    }
+                    return [coord[1], coord[0]];
+                });
+                
+                try {
+                    // Create polygon for area
+                    const polygon = L.polygon(leafletCoords, {
+                        color: '#333',
+                        weight: 1,
+                        fillColor: color,
+                        fillOpacity: 0.7
+                    }).addTo(heatmapLayerGroup);
+                    
+                    // Debug: log first few polygons
+                    if (index < 3) {
+                        // Created polygon for area
+                    }
+                    
+                    // Add click event
+                    polygon.on('click', () => {
+                        showAreaInfo(area.name, survey);
+                    });
+                    
+                    // Add hover event
+                    polygon.on('mouseover', function(e) {
+                    this.setStyle({
+                        weight: 3,
+                        fillOpacity: 0.9
+                    });
+                    
+                    // Show tooltip
+                    const stats = calculateServiceStats(survey);
+                    // Hiển thị tên gốc nếu có trong survey data
+                    const displayName = survey && survey.xaphuong ? survey.xaphuong : area.name;
+                    const tooltipContent = `
+                        <div class="bg-white p-2 rounded shadow-lg text-sm">
+                            <div class="font-semibold">${displayName}</div>
+                            <div class="text-xs text-gray-500">${area.province || 'Vĩnh Long'}</div>
+                            <div class="text-gray-600">
+                                ✅ ${stats.completed} hoàn thành
+                                ${stats.inProgress > 0 ? `<br/>🔄 ${stats.inProgress} đang triển khai` : ''}
+                                <br/>📊 ${stats.completed}/${stats.total} dịch vụ
+                            </div>
+                        </div>
+                    `;
+                    
+                    L.popup()
+                        .setLatLng(e.latlng)
+                        .setContent(tooltipContent)
+                        .openOn(map);
+                });
+                
+                    polygon.on('mouseout', function(e) {
+                        this.setStyle({
+                            weight: 1,
+                            fillOpacity: 0.7
+                        });
+                        map.closePopup();
+                    });
+                    
+                } catch (polygonError) {
+                    console.error(`❌ Error creating polygon for ${area.name}:`, polygonError);
+                }
+            });
+            
+            // Created heatmap polygons
+        }
+        
+        // Calculate heatmap color based on survey completion
+        function getHeatmapColor(survey) {
+            if (!survey) return '#9ca3af'; // Gray for no survey
+            
+            const stats = calculateServiceStats(survey);
+            const percentage = (stats.completed / stats.total) * 100;
+            
+            if (percentage >= 80) return '#10b981'; // Green
+            if (percentage >= 40) return '#f59e0b'; // Yellow
+            return '#ef4444'; // Red
+        }
+        
+        // Calculate service statistics
+        function calculateServiceStats(survey) {
+            if (!survey) return { completed: 0, total: 12, inProgress: 0 };
+            
+            let completed = 0;
+            let inProgress = 0;
+            const total = 12;
+            
+            for (let i = 1; i <= 12; i++) {
+                const serviceValue = survey[`dich_vu_${i}`];
+                if (serviceValue === 'Có') {
+                    completed++;
+                } else if (serviceValue === 'Đang triển khai') {
+                    inProgress++;
+                }
+            }
+            
+            return { completed, total, inProgress };
+        }
+        
+        // Show area information panel
+        function showAreaInfo(areaName, survey) {
+            currentAreaData = { name: areaName, survey };
+            
+            // Hiển thị tên gốc nếu có trong survey data, nếu không thì dùng area name
+            const displayName = survey && survey.xaphuong ? survey.xaphuong : areaName;
+            document.getElementById('areaName').textContent = displayName;
+            
+            if (survey) {
+                const stats = calculateServiceStats(survey);
+                const percentage = (stats.completed / stats.total) * 100;
+                
+                // Update status
+                const statusColor = document.getElementById('statusColor');
+                const statusText = document.getElementById('statusText');
+                const serviceStats = document.getElementById('serviceStats');
+                
+                statusColor.style.backgroundColor = getHeatmapColor(survey);
+                
+                if (percentage >= 80) {
+                    statusText.textContent = 'Đầy đủ dịch vụ';
+                } else if (percentage >= 40) {
+                    statusText.textContent = 'Một phần dịch vụ';
+                } else {
+                    statusText.textContent = 'Thiếu dịch vụ';
+                }
+                
+                serviceStats.textContent = `${stats.completed}/${stats.total} dịch vụ`;
+                
+                // Update service list
+                updateServiceList(survey);
+            } else {
+                document.getElementById('statusColor').style.backgroundColor = '#9ca3af';
+                document.getElementById('statusText').textContent = 'Chưa khảo sát';
+                document.getElementById('serviceStats').textContent = '0/12 dịch vụ';
+                document.getElementById('serviceList').innerHTML = '<div class="text-sm text-gray-500">Chưa có dữ liệu khảo sát</div>';
+            }
+            
+            document.getElementById('infoPanel').classList.remove('hidden');
+        }
+        
+        // Update service list in info panel
+        function updateServiceList(survey) {
+            const serviceList = document.getElementById('serviceList');
+            let html = '';
+            
+            for (let i = 1; i <= 12; i++) {
+                const serviceKey = `dich_vu_${i}`;
+                const serviceName = serviceNames[serviceKey];
+                const serviceValue = survey[serviceKey];
+                
+                // Lấy thông tin chi tiết nếu có (từ Google Sheets format phức tạp)
+                const serviceDetails = survey.service_details || {};
+                const detailedValue = serviceDetails[serviceKey];
+                
+                let serviceClass = 'service-no';
+                let serviceStatus = 'Không';
+                let displayText = serviceStatus;
+                
+                if (serviceValue === 'Có') {
+                    serviceClass = 'service-yes';
+                    serviceStatus = 'Có';
+                    // Hiển thị thông tin chi tiết nếu có
+                    displayText = detailedValue || serviceStatus;
+                } else if (serviceValue === 'Đang triển khai') {
+                    serviceClass = 'service-partial';
+                    serviceStatus = 'Đang triển khai';
+                    displayText = detailedValue || serviceStatus;
+                } else if (serviceValue && serviceValue !== 'Không') {
+                    serviceClass = 'service-partial';
+                    serviceStatus = serviceValue;
+                    displayText = detailedValue || serviceStatus;
+                } else {
+                    // Trường hợp "Không" hoặc không có dữ liệu
+                    displayText = detailedValue || serviceStatus;
+                }
+                
+                html += `
+                    <div class="service-item ${serviceClass}">
+                        <div class="flex justify-between items-start">
+                            <span class="font-medium text-xs">${serviceName}</span>
+                            <span class="text-xs text-right ml-2 flex-shrink-0" style="max-width: 60%;">${displayText}</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            serviceList.innerHTML = html;
+        }
+        
+        // Close info panel
+        function closeInfoPanel() {
+            document.getElementById('infoPanel').classList.add('hidden');
+            currentAreaData = null;
+        }
+        
+        // View details (redirect to survey page)
+        function viewDetails() {
+            if (currentAreaData) {
+                // You can implement detailed view here
+                alert(`Xem chi tiết khảo sát cho ${currentAreaData.name}`);
+            }
+        }
+        
+        // Refresh data
+        async function refreshData() {
+            // Refreshing map data
+            showLoading();
+            
+            try {
+                await loadSurveyData();
+                // Map data refreshed successfully
+            } catch (error) {
+                console.error('❌ Error refreshing map data:', error);
+                showError('Lỗi khi làm mới dữ liệu');
+            }
+        }
+        
+        // Go to home page
+        function goHome() {
+            window.location.href = '/';
+        }
+        
+        // Update last update time
+        function updateLastUpdate() {
+            const now = new Date();
+            document.getElementById('lastUpdate').textContent = now.toLocaleTimeString('vi-VN');
+        }
+        
+        // Update total surveys count
+        function updateTotalSurveys() {
+            const total = Object.keys(surveysData).length;
+            document.getElementById('totalSurveys').textContent = total;
+        }
+        
+        // Show loading spinner
+        function showLoading() {
+            document.getElementById('loadingSpinner').style.display = 'block';
+        }
+        
+        // Hide loading spinner
+        function hideLoading() {
+            document.getElementById('loadingSpinner').style.display = 'none';
+        }
+        
+        // Show error message
+        function showError(message) {
+            alert(`Lỗi: ${message}`);
+        }
+        
+        // Initialize map when page loads
+        document.addEventListener('DOMContentLoaded', initMap);
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (map) {
+                map.invalidateSize();
+            }
+        });
+    </script>
+</body>
+</html>
