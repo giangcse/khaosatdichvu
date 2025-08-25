@@ -201,6 +201,49 @@ def index():
     with open('index.html', 'r', encoding='utf-8') as f:
         return f.read()
 
+@app.route('/sw.js')
+def service_worker():
+    """Serve Service Worker file"""
+    try:
+        with open('sw.js', 'r', encoding='utf-8') as f:
+            response = app.response_class(
+                f.read(),
+                mimetype='application/javascript'
+            )
+            # Cache control for service worker
+            response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+            response.headers['Pragma'] = 'no-cache'
+            response.headers['Expires'] = '0'
+            return response
+    except FileNotFoundError:
+        return "Service Worker not found", 404
+
+@app.route('/offline-manager.js')
+def offline_manager():
+    """Serve Offline Manager JavaScript file"""
+    try:
+        with open('offline-manager.js', 'r', encoding='utf-8') as f:
+            response = app.response_class(
+                f.read(),
+                mimetype='application/javascript'
+            )
+            return response
+    except FileNotFoundError:
+        return "Offline Manager not found", 404
+
+@app.route('/manifest.json')
+def manifest():
+    """Serve PWA Manifest file"""
+    try:
+        with open('manifest.json', 'r', encoding='utf-8') as f:
+            response = app.response_class(
+                f.read(),
+                mimetype='application/json'
+            )
+            return response
+    except FileNotFoundError:
+        return "Manifest not found", 404
+
 @app.route('/submit', methods=['POST'])
 def submit_form():
     """Endpoint để nhận và xử lý dữ liệu form"""
@@ -254,12 +297,57 @@ def get_xaphuong_data():
         )
 
 
+@app.route('/api/sync', methods=['POST'])
+def sync_offline_data():
+    """API endpoint để đồng bộ dữ liệu offline"""
+    try:
+        data = request.get_json()
+        
+        if not data or not isinstance(data, list):
+            return jsonify({
+                'success': False,
+                'message': 'Dữ liệu không hợp lệ'
+            }), 400
+        
+        successful_syncs = 0
+        failed_syncs = 0
+        
+        for submission in data:
+            try:
+                # Loại bỏ các trường metadata offline
+                clean_submission = {k: v for k, v in submission.items() 
+                                  if k not in ['id', 'timestamp', 'synced', 'syncedAt']}
+                
+                success, message = submit_to_google_sheet(clean_submission)
+                if success:
+                    successful_syncs += 1
+                else:
+                    failed_syncs += 1
+                    print(f"Lỗi đồng bộ submission: {message}")
+            except Exception as e:
+                failed_syncs += 1
+                print(f"Lỗi xử lý submission: {e}")
+        
+        return jsonify({
+            'success': True,
+            'message': f'Đã đồng bộ {successful_syncs} khảo sát thành công',
+            'successful': successful_syncs,
+            'failed': failed_syncs
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Lỗi server: {str(e)}'
+        }), 500
+
 @app.route('/health')
 def health_check():
     """Endpoint kiểm tra trạng thái server"""
     return jsonify({
         'status': 'healthy',
-        'message': 'Server đang hoạt động bình thường'
+        'message': 'Server đang hoạt động bình thường',
+        'offline_support': True
     })
 
 if __name__ == '__main__':

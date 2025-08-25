@@ -5,6 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Khảo sát dịch vụ</title>
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Ứng dụng khảo sát dịch vụ cho Xã/Phường với tính năng offline-first">
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Khảo sát VNPT">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234f46e5'%3E%3Cpath d='M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.1 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z'/%3E%3C/svg%3E">
+    <link rel="apple-touch-icon"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234f46e5'%3E%3Cpath d='M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.1 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z'/%3E%3C/svg%3E">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter -->
@@ -17,6 +32,8 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <!-- Thêm SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Offline Manager -->
+    <script src="/offline-manager.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -77,6 +94,39 @@
 
     <!-- Scroll Progress Bar -->
     <div id="progressBar" class="fixed top-0 left-0 h-1.5 bg-indigo-500 z-50 transition-all duration-300"></div>
+    
+    <!-- Network Status Bar -->
+    <div class="fixed top-2 left-4 z-50 flex items-center space-x-4">
+        <!-- Network Status Indicator -->
+        <div id="networkStatus" class="bg-white rounded-full px-3 py-1 shadow-lg border">
+            <div class="flex items-center text-gray-600 text-sm">
+                <div class="w-2 h-2 bg-gray-400 rounded-full mr-2"></div>
+                Đang kiểm tra...
+            </div>
+        </div>
+    
+        <!-- Pending Submissions Counter -->
+        <div id="pendingSubmissions" class="bg-white rounded-full px-3 py-1 shadow-lg border hidden">
+            <div class="flex items-center text-blue-600 text-sm">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                0 chờ đồng bộ
+            </div>
+        </div>
+    
+        <!-- Manual Sync Button -->
+        <button id="manualSyncBtn"
+            class="bg-blue-500 text-white rounded-full p-2 shadow-lg hover:bg-blue-600 transition-colors hidden"
+            title="Đồng bộ thủ công">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                </path>
+            </svg>
+        </button>
+    </div>
 
     <!-- Main Container -->
     <div class="bg-white p-6 md:p-12 rounded-2xl shadow-xl w-full max-w-2xl">
@@ -736,16 +786,26 @@
 
         // Initialize Select2 on the xaphuong select element
                 $(document).ready(function () {
-            $('#xaphuong').select2({
-                placeholder: '-- Chọn Phường/Xã --',
-                allowClear: true,
-                language: {
-                    noResults: function () {
-                        return "Không tìm thấy kết quả";
+                    try {
+                    $('#xaphuong').select2({
+                        placeholder: '-- Chọn Phường/Xã --',
+                        allowClear: true,
+                        language: {
+                            noResults: function () {
+                                return "Không tìm thấy kết quả";
+                        },
+                        searching: function () {
+                            return "Đang tìm kiếm...";
+                        }
+                    },
+                    width: '100%',
+                });
+                        console.log("✅ Select2 đã được khởi tạo thành công");
+                    } catch (error) {
+                        console.error("❌ Lỗi khi khởi tạo Select2:", error);
+                        showNotification("Lỗi khi khởi tạo dropdown. Vui lòng tải lại trang.", "error");
                     }
-                },
-                width: '100%',
-            });
+                    
             // Load the data when the document is ready
             loadData();
         });
@@ -755,36 +815,54 @@
             const selectedDiaban = diabanSelect.value;
             const xaphuongSelect = $('#xaphuong');
 
-            xaphuongSelect.val(null).trigger('change'); // Clear current selection
+            try {
+                xaphuongSelect.val(null).trigger('change'); // Clear current selection
 
-            if (selectedDiaban) {
-                const filteredXaphuong = surveyData.filter(item => item.diaban === selectedDiaban);
-                const formattedData = filteredXaphuong.map(item => ({
-                    id: item.xaphuong,
-                    text: item.xaphuong
-                }));
+                if (selectedDiaban) {
+                    const filteredXaphuong = surveyData.filter(item => item.diaban === selectedDiaban);
+                    const formattedData = filteredXaphuong.map(item => ({
+                        id: item.xaphuong,
+                        text: item.xaphuong
+                    }));
 
-                console.log(`🏘️ Đã load ${formattedData.length} xã/phường cho địa bàn "${selectedDiaban}"`);
+                    console.log(`🏘️ Đã load ${formattedData.length} xã/phường cho địa bàn "${selectedDiaban}"`);
 
-                // Update data for Select2
-                xaphuongSelect.empty().select2({
-                    data: formattedData,
-                    placeholder: `-- Chọn Phường/Xã (${formattedData.length} địa điểm) --`,
-                    allowClear: true,
-                    width: '100%',
-                });
-                xaphuongSelect.prop('disabled', false);
+                    // Update data for Select2
+                    xaphuongSelect.empty().select2({
+                        data: formattedData,
+                        placeholder: `-- Chọn Phường/Xã (${formattedData.length} địa điểm) --`,
+                        allowClear: true,
+                        language: {
+                            noResults: function () {
+                                return "Không tìm thấy kết quả";
+                            },
+                            searching: function () {
+                                return "Đang tìm kiếm...";
+                            }
+                        },
+                        width: '100%',
+                    });
+                    xaphuongSelect.prop('disabled', false);
 
-                // Hiển thị thông báo
-                showNotification(`Đã load ${formattedData.length} xã/phường cho ${selectedDiaban}`, "info");
-            } else {
-                xaphuongSelect.empty().select2({
-                    data: [],
-                    placeholder: '-- Chọn Phường/Xã --',
-                    allowClear: true,
-                    width: '100%',
-                });
-                xaphuongSelect.prop('disabled', true);
+                    // Hiển thị thông báo
+                    showNotification(`Đã load ${formattedData.length} xã/phường cho ${selectedDiaban}`, "info");
+                } else {
+                    xaphuongSelect.empty().select2({
+                        data: [],
+                        placeholder: '-- Chọn Phường/Xã --',
+                        allowClear: true,
+                        language: {
+                            noResults: function () {
+                                return "Không tìm thấy kết quả";
+                            }
+                        },
+                        width: '100%',
+                    });
+                    xaphuongSelect.prop('disabled', true);
+                }
+            } catch (error) {
+                console.error("❌ Lỗi khi cập nhật Select2:", error);
+                showNotification("Lỗi khi cập nhật danh sách xã/phường. Vui lòng thử lại.", "error");
             }
         });
 
@@ -977,111 +1055,213 @@
                 top: 0,
                 behavior: 'smooth'
             });
+        });
 
-            // Add event listener for reload button
-            reloadDataBtn.addEventListener('click', () => {
-                reloadDataBtn.disabled = true;
-                reloadDataBtn.innerHTML = '<svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+                        // Add event listener for reload button
+                        reloadDataBtn.addEventListener('click', () => {
+                            reloadDataBtn.disabled = true;
+                            reloadDataBtn.innerHTML = '<svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
 
-                loadData().finally(() => {
-                    reloadDataBtn.disabled = false;
-                    reloadDataBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>';
-                });
+            loadData().finally(() => {
+                reloadDataBtn.disabled = false;
+                reloadDataBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>';
             });
         });
 
-                surveyForm.addEventListener('submit', function (event) {
-            // Ngăn chặn hành vi gửi form mặc định
-            event.preventDefault();
+    // Add event listener for manual sync button
+    document.addEventListener('DOMContentLoaded', () => {
+        const manualSyncBtn = document.getElementById('manualSyncBtn');
+        if (manualSyncBtn) {
+            manualSyncBtn.addEventListener('click', () => {
+                if (window.offlineManager) {
+                    window.offlineManager.manualSync();
+                }
+                });
+            }
+        });
 
-            // Thu thập dữ liệu
-            const formData = new FormData(surveyForm);
-            const data = {};
-            formData.forEach((value, key) => {
-                data[key] = value;
-            });
-
-            // Hiển thị loading
+            // Function to submit survey data with offline support
+            async function submitSurveyData(data) {
             const submitBtn = surveyForm.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<span class="inline-flex items-center"><svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Đang gửi...</span>';
-            submitBtn.disabled = true;
 
-            // Gửi dữ liệu lên backend
-            fetch('/submit', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            })
-                .then(response => response.json())
-                .then(result => {
-                    // Khôi phục nút submit
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
+            try {
+                submitBtn.innerHTML = '<span class="inline-flex items-center"><svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Đang gửi...</span>';
+                submitBtn.disabled = true;
 
-                    if (result.success) {
-                        // Hiển thị thông báo thành công với SweetAlert2
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Thành công!',
-                            text: 'Dữ liệu đã được gửi thành công.',
-                            confirmButtonText: 'Đóng',
-                            confirmButtonColor: '#4f46e5'
-                        }).then((result) => {
-                            // Reset form sau khi đóng thông báo
-                            surveyForm.reset();
-                            // Ẩn lại các ô nhập liệu số lượng/tốc độ
-                            servicesWithQuantity.forEach(index => {
-                                document.getElementById(`quantity_${index}`).classList.add('hidden');
-                                // Hide additional options
-                                const additionalOptionsDiv = document.getElementById(`additional_options_${index}`);
-                                if (additionalOptionsDiv) {
-                                    additionalOptionsDiv.classList.add('hidden');
-                                }
-                            });
-                            // Hide additional options for services without quantity
-                            const servicesWithoutQuantity = [4, 7, 12];
-                            servicesWithoutQuantity.forEach(index => {
-                                const additionalOptionsDiv = document.getElementById(`additional_options_${index}`);
-                                if (additionalOptionsDiv) {
-                                    additionalOptionsDiv.classList.add('hidden');
-                                }
-                            });
-                            document.getElementById('date_picker_7').classList.add('hidden');
-                            speedInputs8.innerHTML = '';
-                            // Hide additional options for service 8
-                            const additionalOptions8Div = document.getElementById('additional_options_8');
-                            if (additionalOptions8Div) {
-                                additionalOptions8Div.classList.add('hidden');
-                            }
-                        });
-                    } else {
-                        // Hiển thị thông báo lỗi với SweetAlert2
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Lỗi!',
-                            text: result.message,
-                            confirmButtonText: 'Đóng',
-                            confirmButtonColor: '#ef4444'
-                        });
+                const response = await fetch('/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                // Khôi phục nút submit
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+
+                if (result.success) {
+                    // Hiển thị thông báo thành công
+                    const successMessage = result.offline ?
+                        'Dữ liệu đã được lưu offline. Sẽ đồng bộ khi có mạng.' :
+                        'Dữ liệu đã được gửi thành công.';
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công!',
+                        text: successMessage,
+                        confirmButtonText: 'Đóng',
+                        confirmButtonColor: '#4f46e5'
+                    }).then(() => {
+                        resetFormAfterSubmit();
+                    });
+
+                    // Cập nhật UI nếu có offline manager
+                    if (result.offline && window.offlineManager) {
+                        window.offlineManager.updatePendingCounter();
+                        // Hiển thị nút sync manual
+                        const manualSyncBtn = document.getElementById('manualSyncBtn');
+                        if (manualSyncBtn) {
+                            manualSyncBtn.classList.remove('hidden');
+                        }
                     }
-                })
-                .catch(error => {
-                    // Khôi phục nút submit
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-
-                    console.error('Lỗi:', error);
+                } else {
+                    // Hiển thị thông báo lỗi
                     Swal.fire({
                         icon: 'error',
                         title: 'Lỗi!',
-                        text: 'Có lỗi xảy ra khi gửi dữ liệu. Vui lòng thử lại.',
+                        text: result.message,
                         confirmButtonText: 'Đóng',
                         confirmButtonColor: '#ef4444'
                     });
+                }
+            } catch (error) {
+                // Khôi phục nút submit
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+
+                console.error('Lỗi:', error);
+
+                // Nếu có offline manager và đây là lỗi network, có thể là offline
+                if (window.offlineManager && !navigator.onLine) {
+                    // Lưu offline
+                    try {
+                        await window.offlineManager.saveOfflineSubmission(data);
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Đã lưu offline!',
+                            text: 'Không có kết nối mạng. Dữ liệu đã được lưu và sẽ đồng bộ khi online.',
+                            confirmButtonText: 'Đóng',
+                            confirmButtonColor: '#4f46e5'
+                        }).then(() => {
+                            resetFormAfterSubmit();
+                        });
+
+                                            // Hiển thị nút sync manual
+                                            const manualSyncBtn = document.getElementById('manualSyncBtn');
+                                            if (manualSyncBtn) {
+                                                manualSyncBtn.classList.remove('hidden');
+                                            }
+                                        } catch (offlineError) {
+                                            console.error('Lỗi lưu offline:', offlineError);
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Lỗi!',
+                                                text: 'Có lỗi xảy ra khi lưu dữ liệu offline.',
+                                                confirmButtonText: 'Đóng',
+                                                confirmButtonColor: '#ef4444'
+                                            });
+                                        }
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Lỗi!',
+                                            text: 'Có lỗi xảy ra khi gửi dữ liệu. Vui lòng thử lại.',
+                                            confirmButtonText: 'Đóng',
+                                            confirmButtonColor: '#ef4444'
+                                        });
+                                    }
+                                }
+                            }
+
+                            // Function to reset form after successful submit
+                            function resetFormAfterSubmit() {
+                                // Reset form
+                                surveyForm.reset();
+
+            // Reset Select2 elements
+            try {
+                $('#diaban').val('').trigger('change');
+                $('#xaphuong').val(null).trigger('change');
+                $('#xaphuong').prop('disabled', true);
+                $('#xaphuong').empty().select2({
+                    data: [],
+                    placeholder: '-- Chọn Phường/Xã --',
+                    allowClear: true,
+                    language: {
+                        noResults: function () {
+                            return "Không tìm thấy kết quả";
+                        }
+                    },
+                    width: '100%',
                 });
+                console.log("✅ Select2 đã được reset thành công");
+            } catch (error) {
+                console.error("❌ Lỗi khi reset Select2:", error);
+            }
+
+            // Ẩn lại các ô nhập liệu số lượng/tốc độ
+            const servicesWithQuantity = [1, 2, 3, 5, 6, 9, 10, 11];
+            servicesWithQuantity.forEach(index => {
+                document.getElementById(`quantity_${index}`).classList.add('hidden');
+                // Hide additional options
+                const additionalOptionsDiv = document.getElementById(`additional_options_${index}`);
+                if (additionalOptionsDiv) {
+                    additionalOptionsDiv.classList.add('hidden');
+                }
+            });
+
+            // Hide additional options for services without quantity
+            const servicesWithoutQuantity = [4, 7, 12];
+            servicesWithoutQuantity.forEach(index => {
+                const additionalOptionsDiv = document.getElementById(`additional_options_${index}`);
+                if (additionalOptionsDiv) {
+                    additionalOptionsDiv.classList.add('hidden');
+                }
+            });
+
+            document.getElementById('date_picker_7').classList.add('hidden');
+            speedInputs8.innerHTML = '';
+
+            // Hide additional options for service 8
+            const additionalOptions8Div = document.getElementById('additional_options_8');
+            if (additionalOptions8Div) {
+                additionalOptions8Div.classList.add('hidden');
+            }
+        }
+
+    surveyForm.addEventListener('submit', function (event) {
+        // Ngăn chặn hành vi gửi form mặc định
+        event.preventDefault();
+
+                    // Thu thập dữ liệu
+                    const formData = new FormData(surveyForm);
+                    const data = {};
+                    formData.forEach((value, key) => {
+                        data[key] = value;
+                    });
+
+                    // Hiển thị loading
+                    const submitBtn = surveyForm.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<span class="inline-flex items-center"><svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Đang gửi...</span>';
+                    submitBtn.disabled = true;
+
+                    // Gửi dữ liệu với hỗ trợ offline
+                    submitSurveyData(data);
                 });
                 
 
