@@ -1,400 +1,272 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Bản đồ Khảo sát Dịch vụ - Vĩnh Long, Bến Tre, Trà Vinh</title>
-
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <!-- Leaflet Providers -->
-  <script src="https://unpkg.com/leaflet-providers@1.13.0/leaflet-providers.js"></script>
-
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bản đồ khảo sát – Vĩnh Long</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="anonymous" />
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    #map { height: 100vh; width: 100%; }
-    .info-panel {
-      position: absolute; top: 10px; right: 10px; z-index: 1000;
-      background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,.1); max-width: 300px;
+    :root {
+      --ok: #16a34a;
+      /* xanh */
+      --warn: #f59e0b;
+      /* vàng */
+      --bad: #ef4444;
+      /* đỏ */
+      --ink: #111827;
+      /* text */
+      --muted: #6b7280;
+      /* subtext */
+      --line: #e5e7eb;
+      /* border */
+      --bg: #ffffff;
     }
-    .legend {
-      position: absolute; bottom: 30px; right: 10px; z-index: 1000;
-      background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,.1); padding: 15px;
+    html,
+    body {
+      height: 100%;
+      margin: 0;
     }
-    .legend-item { display: flex; align-items: center; margin-bottom: 5px; }
-    .legend-color { width: 20px; height: 20px; border-radius: 4px; margin-right: 8px; border: 1px solid #ccc; }
-    .service-list { max-height: 200px; overflow-y: auto; }
-    .service-item { padding: 4px 8px; border-radius: 4px; margin-bottom: 2px; font-size: 12px; }
-    .service-yes { background-color: #dcfce7; color: #166534; }
-    .service-no { background-color: #fef2f2; color: #dc2626; }
-    .service-partial { background-color: #fef3c7; color: #d97706; }
-    .loading-spinner {
-      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2000;
+    #map {
+      height: 100vh;
+      width: 100vw;
     }
+
+    /* Loading overlay */
+    .loading-overlay { position: fixed; inset: 0; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,.85); backdrop-filter: blur(2px); z-index: 2000; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    .loading-card { display:flex; align-items:center; gap:12px; background:#fff; border-radius:14px; padding:14px 18px; box-shadow:0 10px 30px rgba(0,0,0,.12); }
+    .spinner { width:22px; height:22px; border-radius:50%; border:3px solid #e5e7eb; border-top-color:#3b82f6; animation: spin .9s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg);} }
+    .loading-text { font-size:14px; color:var(--ink); }
+    .loading-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+    .hidden{ display:none !important; }
+
+    /* Legend */
+    .legend { position:absolute; right:12px; bottom:12px; z-index:1000; background:rgba(255,255,255,.96); padding:8px 10px; border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,.12); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; font-size:12px; }
+    .legend .row { display:flex; align-items:center; gap:6px; margin:4px 0; }
+    .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+
+    /* Popup */
+    .vl-popup { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; color: var(--ink); min-width: 480px; max-width: 600px; }
+    .vl-popup h3 { margin:0; font-size:16px; line-height:1.2; }
+    .vl-subrow { display:flex; align-items:center; gap:8px; margin-top:6px; color:var(--muted); font-size:13px; }
+    .vl-divider { height:1px; background:var(--line); margin:8px 0; }
+    .vl-count { color:var(--muted); font-size:13px; margin-bottom:6px; }
+    .vl-list { max-height: 280px; overflow:auto; display:flex; flex-direction:column; gap:6px; padding-right:2px; }
+    .vl-item { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 10px; border-radius:10px; border:1px solid var(--line); font-size:13px; }
+    .vl-item.ok   { background:#ecfdf5; border-color:#bbf7d0; }
+    .vl-item.warn { background:#fffbeb; border-color:#fde68a; }
+    .vl-item.bad  { background:#fef2f2; border-color:#fecaca; }
+    .vl-item .name { display:flex; align-items:center; gap:8px; font-weight:600; }
+    .vl-item .value { white-space:nowrap; }
+    .status-base {
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    
+    .status-detail {
+      display: inline-block;
+      margin-left: 4px;
+      color: var(--muted);
+      font-weight: normal;
+      white-space: normal;   /* Cho phép xuống dòng nếu dài */
+      max-width: 180px;      /* Giới hạn chiều rộng để text tự xuống hàng */
+      word-break: break-word; /* Tự ngắt từ nếu quá dài */
+    }
+    
+    .popup .dot { width:8px; height:8px; }
   </style>
 </head>
-<body class="bg-gray-100">
-  <!-- Loading Spinner -->
-  <div id="loadingSpinner" class="loading-spinner">
-    <div class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-3">
-      <svg class="animate-spin w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-      </svg>
-      <span class="text-gray-700">Đang tải bản đồ...</span>
-    </div>
-  </div>
-
-  <!-- Map -->
+<body>
   <div id="map"></div>
 
-  <!-- Info Panel -->
-  <div id="infoPanel" class="info-panel hidden">
-    <div class="p-4">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="font-semibold text-gray-800" id="areaName">Chọn một khu vực</h3>
-        <button onclick="closeInfoPanel()" class="text-gray-400 hover:text-gray-600">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
-      </div>
-
-      <div class="mb-3">
-        <div class="flex items-center space-x-2 mb-2">
-          <div class="w-4 h-4 rounded-full" id="statusColor"></div>
-          <span class="text-sm font-medium" id="statusText">Chưa có dữ liệu</span>
-        </div>
-        <div class="text-xs text-gray-600">
-          <span id="serviceStats">0/12 dịch vụ</span>
-        </div>
-      </div>
-
-      <div class="service-list" id="serviceList"></div>
-
-      <div class="mt-3 pt-3 border-t">
-        <button onclick="viewDetails()" class="w-full bg-blue-500 text-white px-3 py-2 rounded text-sm hover:bg-blue-600 transition-colors">
-          Xem chi tiết khảo sát
-        </button>
-      </div>
-    </div>
+  <div class="legend" id="legend">
+    <div><strong>Chú giải (mức độ đủ dịch vụ)</strong></div>
+    <div class="row"><span class="dot" style="background:var(--ok)"></span> Nhiều (≥ 9)</div>
+    <div class="row"><span class="dot" style="background:var(--warn)"></span> Trung bình (5–8)</div>
+    <div class="row"><span class="dot" style="background:var(--bad)"></span> Ít (≤ 4)</div>
+    <div style="margin-top:6px;color:var(--muted)">Di chuột để highlight • Nhấp để xem chi tiết</div>
   </div>
 
-  <!-- Legend -->
-  <div class="legend">
-    <h4 class="font-semibold text-gray-800 mb-3 text-sm">Chú thích</h4>
-    <div class="legend-item">
-      <div class="legend-color" style="background-color:#10b981;"></div>
-      <span class="text-xs">Đầy đủ dịch vụ (80-100%)</span>
+  <div id="loading" class="loading-overlay" role="status" aria-live="polite">
+    <div class="loading-card">
+      <div class="spinner" aria-hidden="true"></div>
+      <div>
+        <div class="loading-text">Đang tải biên giới xã/phường…</div>
+        <div class="loading-sub">Vui lòng đợi dữ liệu GeoJSON và nền bản đồ được tải xong.</div>
+      </div>
     </div>
-    <div class="legend-item">
-      <div class="legend-color" style="background-color:#f59e0b;"></div>
-      <span class="text-xs">Một phần dịch vụ (40-79%)</span>
-    </div>
-    <div class="legend-item">
-      <div class="legend-color" style="background-color:#ef4444;"></div>
-      <span class="text-xs">Thiếu dịch vụ (0-39%)</span>
-    </div>
-    <div class="legend-item">
-      <div class="legend-color" style="background-color:#9ca3af;"></div>
-      <span class="text-xs">Chưa khảo sát</span>
-    </div>
-  </div>
-
-  <!-- Control Panel -->
-  <div class="absolute top-4 left-4 z-50 bg-white rounded-lg shadow-lg p-4">
-    <h2 class="font-bold text-lg text-gray-800 mb-2">Bản đồ Khảo sát Dịch vụ</h2>
-    <p class="text-sm text-gray-600 mb-3">Vĩnh Long, Bến Tre, Trà Vinh</p>
-
-    <div class="space-y-2">
-      <button onclick="refreshData()" class="w-full bg-green-500 text-white px-3 py-2 rounded text-sm hover:bg-green-600 transition-colors flex items-center justify-center space-x-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-        </svg>
-        <span>Làm mới dữ liệu</span>
-      </button>
-
-      <button onclick="goHome()" class="w-full bg-blue-500 text-white px-3 py-2 rounded text-sm hover:bg-blue-600 transition-colors">
-        Về trang khảo sát
-      </button>
     </div>
 
-    <div class="mt-3 pt-3 border-t text-xs text-gray-500">
-      <div>Cập nhật: <span id="lastUpdate">--</span></div>
-      <div>Tổng khảo sát: <span id="totalSurveys">0</span></div>
-    </div>
-  </div>
-
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/leaflet-providers@1.13.0/leaflet-providers.js"></script>
   <script>
-    // ==== Global ====
-    let map;
-    let currentAreaData = null;
-    let surveysData = {};
-    let heatmapLayerGroup = null;
+            // ===== Map init =====
+            const map = L.map('map', { preferCanvas: true });
 
-    // default polygon style (để reset hover cho chắc)
-    const DEFAULT_POLY_STYLE = {
-      color: '#ffffff',
-      weight: 2,
-      fillColor: '#9ca3af',
-      fillOpacity: 0.8
-    };
+            let initialLoading = true, tilesReady = false, geojsonReady = false;
+            const loadingEl = document.getElementById('loading');
+            const showLoading = (msg) => { if (!initialLoading) return; if (msg) loadingEl.querySelector('.loading-text').textContent = msg; loadingEl.classList.remove('hidden'); };
+            const hideLoading = () => { loadingEl.classList.add('hidden'); initialLoading = false; };
+            const maybeHide = () => { if (tilesReady && geojsonReady) hideLoading(); };
 
-    // Service names mapping
-    const serviceNames = {
-      'dich_vu_1':  'Biên lai điện tử',
-      'dich_vu_2':  'Kiosk AI',
-      'dich_vu_3':  'Kiosk bắt số',
-      'dich_vu_4':  'Hội nghị TT',
-      'dich_vu_5':  'Hệ thống Wifi',
-      'dich_vu_6':  'Camera HCC',
-      'dich_vu_7':  'Camera xã phường',
-      'dich_vu_8':  'Kênh TSL CD',
-      'dich_vu_9':  'AI cho CCVC',
-      'dich_vu_10': 'Smart IR',
-      'dich_vu_11': 'Firewall S-Gate',
-      'dich_vu_12': 'VNPT Money'
-    };
+            const esri = L.tileLayer.provider('Esri.WorldImagery');
+            const cartoLight = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 20, attribution: '&copy; OpenStreetMap & CARTO' });
+            esri.on('loading', () => showLoading());
+            esri.on('load', () => { tilesReady = true; maybeHide(); });
+            esri.addTo(map);
+            L.control.layers({ 'Esri World Imagery': esri, 'Carto Light': cartoLight }, {}, { position: 'topleft' }).addTo(map);
 
-    // ==== Init Map ====
-    function initMap() {
-      // giữa 3 tỉnh
-      map = L.map('map', { center: [10.14, 106.15], zoom: 9, minZoom: 5 });
+            // Zoom vào Vĩnh Long
+            map.setView([10.00, 106.45], 10);
 
-      // Base layer từ leaflet-providers: Esri.WorldImagery
-      const baseSatellite = L.tileLayer.provider('Esri.WorldImagery').addTo(map);
+            let gjLayer = null, surveys = {};
 
-      // Nhóm các polygon tô màu
-      heatmapLayerGroup = L.layerGroup().addTo(map);
-
-      // Load survey data từ API
-      loadSurveyData();
+            // ===== Helpers =====
+            function normalizeName(s) {
+              if (!s) return '';
+              s = String(s).trim();
+              const pfx = ['Xã ', 'Phường ', 'Thị trấn ', 'Thị xã ', 'xã ', 'phường ', 'thị trấn ', 'thị xã '];
+              for (const p of pfx) { if (s.startsWith(p)) { s = s.slice(p.length).trim(); break; } }
+              return s;
     }
+            function statusColorByCount(n) {
+              if (typeof n !== 'number') return '#93c5fd';
+              if (n >= 9) return getComputedStyle(document.documentElement).getPropertyValue('--ok') || '#16a34a';
+              if (n >= 5) return getComputedStyle(document.documentElement).getPropertyValue('--warn') || '#f59e0b';
+              return getComputedStyle(document.documentElement).getPropertyValue('--bad') || '#ef4444';
+            }
+            function parseStatusText(raw) {
+              const s = String(raw || '').trim();
+              let base = s, detail = '';
+              const open = s.indexOf('('), close = s.lastIndexOf(')');
+              if (open >= 0 && close > open) { base = s.slice(0, open).trim(); detail = s.slice(open + 1, close).trim(); }
+              if (/^có\b/i.test(base)) base = 'Có';
+              else if (/^kh[oô]ng\b/i.test(base)) base = 'Không';
+              else if (/^đang/i.test(base)) base = 'Đang triển khai';
+              else if (/^chưa/i.test(base)) base = 'Chưa khảo sát';
+              return { base, detail };
+          }
+            function escapeHtml(s) { return String(s).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;'); }
 
-    // ==== API ====
-    async function loadSurveyData() {
-      try {
-        const response = await fetch('/api/map-data');
-        const data = await response.json();
+            const SERVICE_NAMES = { 1: 'Biên lai điện tử', 2: 'Kiosk AI', 3: 'Kiosk bắt số', 4: 'Hội nghị TT', 5: 'Hệ thống Wifi', 6: 'Camera HCC', 7: 'Camera xã phường', 8: 'Kênh TSL CD', 9: 'AI cho CCVC', 10: 'Smart IR', 11: 'Firewall S-Gate', 12: 'VNPT Money' };
+            function serviceClass(base) { if (base === 'Có') return 'ok'; if (base === 'Không') return 'bad'; if (base === 'Đang triển khai') return 'warn'; return ''; }
 
-        if (data && data.success) {
-          surveysData = data.surveys || {};
-          updateLastUpdate();
-          updateTotalSurveys();
-          createHeatmapLayers(data.areas || []);
-        } else {
-          console.error('Failed to load survey data:', data && data.message);
-          showError('Không thể tải dữ liệu khảo sát');
-        }
-      } catch (error) {
-        console.error('Error loading survey data:', error);
-        showError('Lỗi kết nối khi tải dữ liệu');
-      } finally {
-        hideLoading();
+            function popupLoadingHtml(areaRaw) {
+              const name = escapeHtml(areaRaw || '(không tên)');
+              return `<div class="vl-popup"><h3>${name}</h3><div class="vl-subrow"><div class="spinner" style="width:16px;height:16px;border-width:2px;border-top-color:#16a34a"></div>Đang tải chi tiết…</div></div>`;
+            }
+
+            function popupErrorHtml(areaRaw, msg) {
+              const name = escapeHtml(areaRaw || '(không tên)');
+              return `<div class="vl-popup"><h3>${name}</h3><div class="vl-divider"></div><div class="vl-subrow" style="color:#b91c1c">${escapeHtml(msg || 'Không tải được dữ liệu')}</div></div>`;
+            }
+
+            function buildPopupFromApi(areaRaw, api) {
+              const svList = api?.services || [];
+              const completed = api?.statistics?.completed_services || 0;
+              let listHtml = '';
+              for (const it of svList) {
+                const nm = SERVICE_NAMES[it.id] || it.name || (`Dịch vụ ${it.id}`);
+                const { base, detail } = parseStatusText(it.status);
+          
+              // Logic màu sắc đặc biệt cho dịch vụ "Kênh TSL CD" (id = 8)
+              let cls, dot;
+              if (it.id === 8) { // Kênh TSL CD
+                cls = base === 'Không' ? 'bad' : base === 'Có' ? 'ok' : base === 'Đang triển khai' ? 'warn' : '';
+                dot = base === 'Không' ? 'var(--bad)' : base === 'Có' ? 'var(--ok)' : base === 'Đang triển khai' ? 'var(--warn)' : '#9ca3af';
+              } else {
+                cls = serviceClass(base);
+                dot = base === 'Có' ? 'var(--ok)' : base === 'Không' ? 'var(--bad)' : base === 'Đang triển khai' ? 'var(--warn)' : '#9ca3af';
+              }
+            
+              const valueHtml = `
+              <div>
+                <span class="status-base">${escapeHtml(base)}</span>
+                ${detail ? `<div class="status-detail">${escapeHtml(detail)}</div>` : ''}
+              </div>`;
+
+              listHtml += `<div class="vl-item ${cls}"><div class="name"><span class="dot" style="background:${dot}"></span>${escapeHtml(nm)}</div><div class="value">${valueHtml}</div></div>`;
       }
+            const name = escapeHtml(areaRaw || '(không tên)');
+            return `
+        <div class="vl-popup">
+          <h3>${name}</h3>
+          <div class="vl-divider"></div>
+          <div class="vl-count">${completed}/12 dịch vụ</div>
+          <div class="vl-list">${listHtml}</div>
+        </div>`;
     }
 
-    // ==== Render polygons ====
-    function createHeatmapLayers(areas) {
-      if (!Array.isArray(areas)) areas = [];
+            function countYesFromLocal(sv) {
+              if (!sv) return 0; let n = 0; for (let i = 1; i <= 12; i++) { const { base } = parseStatusText(sv['dich_vu_' + i]); if (base === 'Có') n++; } return n;
+      }
 
-      // Clear cũ
-      if (heatmapLayerGroup) heatmapLayerGroup.clearLayers();
+            function baseStyle(feat) {
+              const p = feat?.properties || {};
+              const name = normalizeName(p.TEN_XA || p.ten_xa || p.Name || p.name || p.xaphuong);
+              const sv = surveys[name];
+              const yes = countYesFromLocal(sv);
+              return { color: '#1f2937', weight: 1, fillColor: sv ? statusColorByCount(yes) : '#3b82f6', fillOpacity: sv ? .75 : .25 };
+    }
 
-      areas.forEach((area) => {
-        const survey = surveysData[area.name];
-        const color = getHeatmapColor(survey);
+            function onEachFeature(feat, layer) {
+              const p = feat?.properties || {};
+              const rawName = p.TEN_XA || p.ten_xa || p.Name || p.name || p.xaphuong || '';
+              const nameKey = normalizeName(rawName);
 
-        // Validate coords: kỳ vọng array các cặp [lng,lat] phẳng
-        if (!area.coordinates || !Array.isArray(area.coordinates) || area.coordinates.length === 0) {
-          console.warn(`⚠️ Invalid coordinates for area: ${area.name}`);
-          return;
-        }
+            // Bind a lightweight popup immediately (shows loading), then fetch API and replace content
+            layer.bindPopup(popupLoadingHtml(rawName), { maxWidth: 480, className: 'popup' });
 
-        // Convert [lng,lat] -> [lat,lng]
-        const leafletCoords = area.coordinates
-          .filter(p => Array.isArray(p) && p.length >= 2 && isFinite(p[0]) && isFinite(p[1]))
-          .map(([lng, lat]) => [lat, lng]);
-
-        if (leafletCoords.length === 0) {
-          console.warn(`⚠️ No valid coordinate pairs for area: ${area.name}`);
-          return;
-        }
-
-        try {
-          const polygon = L.polygon(leafletCoords, {
-            ...DEFAULT_POLY_STYLE,
-            fillColor: color
-          }).addTo(heatmapLayerGroup);
-
-          // Click -> mở panel
-          polygon.on('click', () => showAreaInfo(area.name, survey));
-
-          // Hover
-          polygon.on('mouseover', function (e) {
-            this.setStyle({ weight: 3, fillOpacity: 0.9, color: '#ffff00' });
-
-            const stats = calculateServiceStats(survey);
-            const displayName = (survey && survey.xaphuong) ? survey.xaphuong : area.name;
-            const tooltipContent = `
-              <div class="bg-white p-2 rounded shadow-lg text-sm">
-                <div class="font-semibold">${displayName}</div>
-                <div class="text-xs text-gray-500">${area.province || ''}</div>
-                <div class="text-gray-600">
-                  ✅ ${stats.completed} hoàn thành
-                  ${stats.inProgress > 0 ? `<br/>🔄 ${stats.inProgress} đang triển khai` : ''}
-                  <br/>📊 ${stats.completed}/${stats.total} dịch vụ
-                </div>
-              </div>
-            `;
-
-            L.popup()
-              .setLatLng(e.latlng)
-              .setContent(tooltipContent)
-              .openOn(map);
+            layer.on({
+              mouseover: e => { e.target.setStyle({ weight: 2, color: '#111827', fillOpacity: .8 }); },
+              mouseout: e => { if (gjLayer) gjLayer.resetStyle(e.target); },
+              click: e => {
+                const b = e.target.getBounds?.(); if (b && b.isValid()) map.fitBounds(b, { padding: [20, 20] });
+                e.target.openPopup();
+                // Fire API call now
+                const url = `/api/survey-details/${encodeURIComponent(nameKey)}`;
+                fetch(url, { cache: 'no-store' })
+                  .then(r => r.ok ? r.json() : r.json().catch(() => ({ success: false, message: r.statusText })).then(j => Promise.reject(j)))
+                  .then(data => {
+                    const html = buildPopupFromApi(rawName, data);
+                    e.target.getPopup().setContent(html).update();
+                  })
+                  .catch(err => {
+                    const msg = err?.message || err?.detail || err?.error || 'Không tải được chi tiết';
+                    e.target.getPopup().setContent(popupErrorHtml(rawName, msg)).update();
+                  });
+              }
           });
-
-          polygon.on('mouseout', function () {
-            this.setStyle({ ...DEFAULT_POLY_STYLE, fillColor: color });
-            map.closePopup();
-          });
-        } catch (err) {
-          console.error(`❌ Error creating polygon for ${area.name}:`, err);
-        }
-      });
     }
 
-    // ==== Helpers ====
-    function getHeatmapColor(survey) {
-      if (!survey) return '#9ca3af'; // xám: chưa khảo sát
-      const { completed, total } = calculateServiceStats(survey);
-      const pct = (completed / total) * 100;
-      if (pct >= 80) return '#10b981'; // xanh
-      if (pct >= 40) return '#f59e0b'; // vàng
-      return '#ef4444';               // đỏ
+            function addGeoJsonToMap(data) {
+              if (gjLayer) { map.removeLayer(gjLayer); gjLayer = null; }
+              const opts = { style: baseStyle, onEachFeature };
+              gjLayer = L.geoJSON(data, opts).addTo(map);
+              geojsonReady = true; maybeHide();
     }
 
-    function calculateServiceStats(survey) {
-      if (!survey) return { completed: 0, total: 12, inProgress: 0 };
-      let completed = 0, inProgress = 0, total = 12;
-      for (let i = 1; i <= 12; i++) {
-        const v = survey[`dich_vu_${i}`];
-        if (v === 'Có') completed++;
-        else if (v === 'Đang triển khai') inProgress++;
-      }
-      return { completed, total, inProgress };
+            async function loadAll() {
+              try {
+                const [gjRes, apiRes] = await Promise.all([
+                  fetch('map.geojson', { cache: 'no-store' }),
+                  fetch('/api/map-data', { cache: 'no-store' }).catch(() => null)
+                ]);
+                if (!gjRes.ok) throw new Error('Không đọc được map.geojson');
+                const gj = await gjRes.json();
+                const api = apiRes && apiRes.ok ? await apiRes.json() : null;
+                surveys = api && api.surveys ? api.surveys : {};
+                addGeoJsonToMap(gj);
+              } catch (e) {
+                console.error(e);
+                loadingEl.querySelector('.loading-text').textContent = 'Lỗi khi tải dữ liệu bản đồ';
+                loadingEl.querySelector('.loading-sub').textContent = 'Kiểm tra lại map.geojson và API /api/map-data.';
+              }
     }
 
-    function showAreaInfo(areaName, survey) {
-      currentAreaData = { name: areaName, survey };
-      const displayName = (survey && survey.xaphuong) ? survey.xaphuong : areaName;
-
-      document.getElementById('areaName').textContent = displayName;
-
-      if (survey) {
-        const stats = calculateServiceStats(survey);
-        const pct = (stats.completed / stats.total) * 100;
-
-        const statusColor = document.getElementById('statusColor');
-        const statusText  = document.getElementById('statusText');
-        const serviceStats= document.getElementById('serviceStats');
-
-        statusColor.style.backgroundColor = getHeatmapColor(survey);
-        statusText.textContent = (pct >= 80) ? 'Đầy đủ dịch vụ'
-                              : (pct >= 40) ? 'Một phần dịch vụ'
-                              : 'Thiếu dịch vụ';
-        serviceStats.textContent = `${stats.completed}/${stats.total} dịch vụ`;
-
-        updateServiceList(survey);
-      } else {
-        document.getElementById('statusColor').style.backgroundColor = '#9ca3af';
-        document.getElementById('statusText').textContent = 'Chưa khảo sát';
-        document.getElementById('serviceStats').textContent = '0/12 dịch vụ';
-        document.getElementById('serviceList').innerHTML =
-          '<div class="text-sm text-gray-500">Chưa có dữ liệu khảo sát</div>';
-      }
-
-      document.getElementById('infoPanel').classList.remove('hidden');
-    }
-
-    function updateServiceList(survey) {
-      const serviceList = document.getElementById('serviceList');
-      let html = '';
-      const details = (survey && survey.service_details) ? survey.service_details : {};
-
-      for (let i = 1; i <= 12; i++) {
-        const key = `dich_vu_${i}`;
-        const name = serviceNames[key] || key;
-        const val = survey ? survey[key] : undefined;
-        const detail = details[key];
-
-        let cls = 'service-no', displayText = 'Không';
-        if (val === 'Có')        { cls = 'service-yes';     displayText = detail || 'Có'; }
-        else if (val === 'Đang triển khai') { cls = 'service-partial'; displayText = detail || 'Đang triển khai'; }
-        else if (val && val !== 'Không') { cls = 'service-partial'; displayText = detail || val; }
-
-        html += `
-          <div class="service-item ${cls}">
-            <div class="flex justify-between items-start">
-              <span class="font-medium text-xs">${name}</span>
-              <span class="text-xs text-right ml-2 flex-shrink-0" style="max-width:60%;">${displayText}</span>
-            </div>
-          </div>
-        `;
-      }
-      serviceList.innerHTML = html;
-    }
-
-    function closeInfoPanel() {
-      document.getElementById('infoPanel').classList.add('hidden');
-      currentAreaData = null;
-    }
-
-    function viewDetails() {
-      if (currentAreaData) {
-        alert(`Xem chi tiết khảo sát cho ${currentAreaData.name}`);
-      }
-    }
-
-    async function refreshData() {
-      showLoading();
-      try { await loadSurveyData(); }
-      catch (e) {
-        console.error('❌ Error refreshing map data:', e);
-        showError('Lỗi khi làm mới dữ liệu');
-      }
-    }
-
-    function goHome() { window.location.href = '/'; }
-
-    function updateLastUpdate() {
-      document.getElementById('lastUpdate').textContent =
-        new Date().toLocaleTimeString('vi-VN');
-    }
-
-    function updateTotalSurveys() {
-      document.getElementById('totalSurveys').textContent =
-        Object.keys(surveysData || {}).length;
-    }
-
-    function showLoading() { document.getElementById('loadingSpinner').style.display = 'block'; }
-    function hideLoading() { document.getElementById('loadingSpinner').style.display = 'none'; }
-    function showError(message) { alert(`Lỗi: ${message}`); }
-
-    // Boot
-    document.addEventListener('DOMContentLoaded', initMap);
-    window.addEventListener('resize', () => map && map.invalidateSize());
+            // init
+            esri.on('load', () => { tilesReady = true; maybeHide(); });
+            loadAll();
   </script>
 </body>
 </html>
