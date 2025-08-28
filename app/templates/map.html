@@ -83,6 +83,18 @@
     .leaflet-control-zoom a { width: 34px; height: 34px; line-height: 34px; }
     .leaflet-control-layers-toggle { width: 34px; height: 34px; }
 
+    /* Nhãn tên phường/xã */
+    .area-label {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      color: #fff;
+      font-weight: 700;
+      font-size: 12px;
+      text-shadow: 0 0 2px #000, 0 0 4px #000, 0 0 6px #000;
+      pointer-events: none; /* không chặn thao tác trên polygon */
+    }
+
     /* Các tối ưu hóa cho di động */
     @media (max-width: 640px) {
       .vl-popup {
@@ -276,6 +288,13 @@
 
             // Bind a lightweight popup immediately (shows loading), then fetch API and replace content
             layer.bindPopup(popupLoadingHtml(rawName), { maxWidth: 480, className: 'popup' });
+
+            // Bind nhãn tên phường/xã (tooltip cố định ở tâm)
+            if (rawName) {
+              try {
+                layer.bindTooltip(escapeHtml(rawName), { permanent: true, direction: 'center', className: 'area-label' });
+              } catch (e) { /* ignore */ }
+            }
 
             layer.on({
               mouseover: e => { e.target.setStyle({ weight: 2, color: '#111827', fillOpacity: .8 }); },
