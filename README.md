@@ -83,16 +83,41 @@ python main.py
 
 Sau đó truy cập: http://localhost:5000
 
+### Chạy production với Waitress (khuyến nghị trên Windows)
+
+```bash
+pip install -r requirements.txt
+set HOST=0.0.0.0
+set PORT=8000
+python run_waitress.py
+```
+
+Hoặc dùng lệnh một dòng (nếu đã cài waitress):
+
+```bash
+waitress-serve --listen=0.0.0.0:8000 wsgi:app
+```
+
+Gợi ý cấu hình IIS/Nginx: đặt reverse proxy tới `http://127.0.0.1:8000`.
+
 ## Cấu trúc dự án
 
 ```
 Khaosat/
-├── main.py              # Backend Flask server
-├── index.html           # Frontend form khảo sát
-├── xaphuong.json        # Dữ liệu xã phường
-├── credentials.json     # Google API credentials (cần tạo)
-├── requirements.txt     # Python dependencies
-└── README.md           # Hướng dẫn này
+├── app/
+│   ├── __init__.py          # create_app, đăng ký blueprint
+│   ├── routes/
+│   │   ├── public.py        # Trang tĩnh, PWA, map, assets
+│   │   └── api.py           # API endpoints (/api/*)
+│   ├── services/
+│   │   ├── surveys.py       # Đọc dữ liệu Sheets, chuẩn hóa
+│   │   └── sheets.py        # Ghi dữ liệu lên Sheets
+│   └── static/              # index.html, map.html, sw.js, ... (tĩnh)
+├── wsgi.py                  # Entry cho WSGI server (waitress, gunicorn)
+├── run_waitress.py          # Script chạy waitress production
+├── config.py                # Cấu hình Dev/Prod
+├── requirements.txt         # Python dependencies
+└── README.md                # Hướng dẫn này
 ```
 
 ## API Endpoints

@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Bản đồ khảo sát – Vĩnh Long</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="anonymous" />
   <style>
@@ -28,7 +28,10 @@
     }
     #map {
       height: 100vh;
+      height: 100svh; /* mobile viewport units for better address bar behavior */
       width: 100vw;
+      touch-action: pan-x pan-y; /* improve touch scrolling */
+      -webkit-tap-highlight-color: transparent;
     }
 
     /* Loading overlay */
@@ -74,6 +77,63 @@
     }
     
     .popup .dot { width:8px; height:8px; }
+
+    /* Tối ưu hóa các control Leaflet chung */
+    .leaflet-control { border-radius: 12px; overflow: hidden; }
+    .leaflet-control-zoom a { width: 34px; height: 34px; line-height: 34px; }
+    .leaflet-control-layers-toggle { width: 34px; height: 34px; }
+
+    /* Các tối ưu hóa cho di động */
+    @media (max-width: 640px) {
+      .vl-popup {
+        min-width: unset;
+        max-width: 90vw;
+        width: auto;
+      }
+      .vl-popup h3 {
+        font-size: 14px;
+      }
+      .vl-subrow, .vl-count, .vl-list, .vl-item {
+        font-size: 12px;
+      }
+      .vl-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .vl-item .value {
+        margin-top: 4px;
+      }
+      .legend {
+        right: 8px;
+        bottom: env(safe-area-inset-bottom, 12px);
+        top: auto;
+        font-size: 11px;
+        padding: 6px 8px;
+        border-radius: 10px;
+      }
+      .legend .row {
+        margin: 2px 0;
+      }
+      .loading-card {
+        padding: 10px 14px;
+        border-radius: 10px;
+        gap: 10px;
+      }
+      .spinner {
+        width: 18px;
+        height: 18px;
+      }
+      .loading-text {
+        font-size: 12px;
+      }
+      .loading-sub {
+        font-size: 10px;
+      }
+      /* Phóng to control để dễ bấm */
+      .leaflet-control-zoom a { width: 40px; height: 40px; line-height: 40px; font-size: 18px; }
+      .leaflet-control-layers-toggle { width: 40px; height: 40px; background-size: 24px 24px; }
+      .leaflet-control-attribution { font-size: 10px; padding: 4px 6px; }
+    }
   </style>
 </head>
 <body>

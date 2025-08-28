@@ -1,5 +1,6 @@
 Flask
 Flask-CORS
+waitress
 gspread
 google-auth
 google-auth-oauthlib
