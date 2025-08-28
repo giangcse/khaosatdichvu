@@ -21,6 +21,16 @@ def create_app(config_object: str | None = None) -> Flask:
     # Extensions
     CORS(app)
 
+    # Redis client (tùy chọn)
+    try:
+        import redis
+
+        redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+        app.extensions["redis"] = redis.Redis.from_url(redis_url, decode_responses=True)
+    except Exception:
+        # Không chặn app nếu Redis chưa sẵn sàng
+        app.extensions["redis"] = None
+
     # Blueprints
     from .routes.api import api_bp
     from .routes.public import public_bp
@@ -28,5 +38,3 @@ def create_app(config_object: str | None = None) -> Flask:
     app.register_blueprint(api_bp, url_prefix="/api")
 
     return app
-
-

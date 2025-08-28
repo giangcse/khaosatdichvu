@@ -17,54 +17,86 @@ api_bp = Blueprint("api", __name__)
 def api_map_data():
     try:
         static_file = os.path.join(current_app.static_folder, "map.geojson")
-        with open(static_file, "r", encoding="utf-8") as f:
-            gj = json.load(f)
 
-        surveys = get_survey_data_from_sheets() or {}
+        # Thử lấy "areas" từ Redis cache, key theo mtime của file
+        redis_client = (current_app.extensions or {}).get("redis")
+        areas = None
+        cache_ttl_seconds = 6 * 60 * 60  # 6 giờ
+        cache_key = None
+        try:
+            mtime = int(os.path.getmtime(static_file))
+            cache_key = f"cache:map_areas:{mtime}"
+            if redis_client:
+                cached = redis_client.get(cache_key)
+                if cached:
+                    areas = json.loads(cached)
+        except Exception:
+            pass
 
-        areas = []
+        if areas is None:
+            with open(static_file, "r", encoding="utf-8") as f:
+                gj = json.load(f)
 
-        def prop_get(props, *keys):
-            for k in keys:
-                if k in props:
-                    return props[k]
-            return ""
+            areas = []
 
-        for feat in gj.get("features", []):
-            props = feat.get("properties", {})
-            geom = feat.get("geometry") or {}
-            name = prop_get(
-                props, "ten_xa", "tenphuongxa", "TEN_XA", "Name", "name", "xaphuong"
-            )
-            province = prop_get(props, "ten_tinh", "TEN_TINH", "province", "tinh")
-            if not name or not geom:
-                continue
+            def prop_get(props, *keys):
+                for k in keys:
+                    if k in props:
+                        return props[k]
+                return ""
 
-            gtype = geom.get("type")
-            coords = geom.get("coordinates")
-
-            def first_ring(poly_coords):
-                if not poly_coords:
-                    return []
-                return (
-                    poly_coords[0]
-                    if isinstance(poly_coords[0][0], list)
-                    else poly_coords
+            for feat in gj.get("features", []):
+                props = feat.get("properties", {})
+                geom = feat.get("geometry") or {}
+                name = prop_get(
+                    props, "ten_xa", "tenphuongxa", "TEN_XA", "Name", "name", "xaphuong"
                 )
+                province = prop_get(props, "ten_tinh", "TEN_TINH", "province", "tinh")
+                if not name or not geom:
+                    continue
 
-            if gtype == "Polygon":
-                ring = first_ring(coords)
-                if ring:
-                    areas.append(
-                        {"name": name, "coordinates": ring, "province": province}
+                gtype = geom.get("type")
+                coords = geom.get("coordinates")
+
+                def first_ring(poly_coords):
+                    if not poly_coords:
+                        return []
+                    return (
+                        poly_coords[0]
+                        if isinstance(poly_coords[0][0], list)
+                        else poly_coords
                     )
-            elif gtype == "MultiPolygon":
-                if coords and coords[0]:
-                    ring = first_ring(coords[0])
+
+                if gtype == "Polygon":
+                    ring = first_ring(coords)
                     if ring:
                         areas.append(
                             {"name": name, "coordinates": ring, "province": province}
                         )
+                elif gtype == "MultiPolygon":
+                    if coords and coords[0]:
+                        ring = first_ring(coords[0])
+                        if ring:
+                            areas.append(
+                                {
+                                    "name": name,
+                                    "coordinates": ring,
+                                    "province": province,
+                                }
+                            )
+
+            # Lưu cache nếu có Redis
+            try:
+                if redis_client and cache_key and areas is not None:
+                    redis_client.setex(
+                        cache_key,
+                        cache_ttl_seconds,
+                        json.dumps(areas, ensure_ascii=False),
+                    )
+            except Exception:
+                pass
+
+        surveys = get_survey_data_from_sheets() or {}
 
         payload = {
             "success": True,
@@ -156,8 +188,34 @@ def submit_form():
 @api_bp.get("/xaphuong")
 def get_xaphuong_data():
     try:
-        with open(os.path.join(current_app.static_folder, "xaphuong.json"), "r", encoding="utf-8") as f:
-            data = json.load(f)
+        static_file = os.path.join(current_app.static_folder, "xaphuong.json")
+        redis_client = (current_app.extensions or {}).get("redis")
+        cache_ttl_seconds = 12 * 60 * 60  # 12 giờ vì dữ liệu ít thay đổi
+        cache_key = None
+        data = None
+        try:
+            mtime = int(os.path.getmtime(static_file))
+            cache_key = f"cache:xaphuong:{mtime}"
+            if redis_client:
+                cached = redis_client.get(cache_key)
+                if cached:
+                    data = json.loads(cached)
+        except Exception:
+            pass
+
+        if data is None:
+            with open(static_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            try:
+                if redis_client and cache_key and data is not None:
+                    redis_client.setex(
+                        cache_key,
+                        cache_ttl_seconds,
+                        json.dumps(data, ensure_ascii=False),
+                    )
+            except Exception:
+                pass
+
         return jsonify({"success": True, "data": data, "count": len(data)})
     except Exception as e:
         return jsonify({"success": False, "message": f"Lỗi khi đọc dữ liệu xã phường: {e}"}), 500
@@ -196,5 +254,3 @@ def sync_offline_data():
 @api_bp.get("/health")
 def health_check():
     return jsonify({"status": "healthy", "message": "Server đang hoạt động bình thường", "offline_support": True})
-
-
