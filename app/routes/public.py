@@ -44,6 +44,14 @@ def page_map():
     return send_from_directory(current_app.static_folder, "map.html")
 
 
+@public_bp.get("/dashboard")
+def page_dashboard():
+    tpl_path = os.path.join(current_app.template_folder or "", "dashboard.html")
+    if tpl_path and os.path.exists(tpl_path):
+        return render_template("dashboard.html")
+    return ("Dashboard template not found", 404)
+
+
 @public_bp.get("/map.geojson")
 def serve_geojson():
     # map.geojson đã được chuyển vào app/static
@@ -56,5 +64,3 @@ def submit_compat():
     # Chuyển tiếp nội bộ tới /api/submit để dùng cùng handler
     from .api import submit_form  # import tại chỗ để tránh vòng lặp
     return submit_form()
-
-

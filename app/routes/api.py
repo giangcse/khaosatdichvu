@@ -251,6 +251,236 @@ def sync_offline_data():
         return jsonify({"success": False, "message": f"Lỗi server: {e}"}), 500
 
 
+@api_bp.get("/dashboard-stats")
+def dashboard_stats():
+    """API endpoint để cung cấp thống kê cho dashboard"""
+    try:
+        surveys = get_survey_data_from_sheets() or {}
+
+        # Thống kê tổng quan - tính dựa trên tổng số xã/phường thực tế từ xaphuong.json
+        # Đọc tổng số xã/phường từ xaphuong.json
+        try:
+            import json
+            import os
+
+            static_file = os.path.join(
+                os.path.dirname(__file__), "..", "static", "xaphuong.json"
+            )
+            with open(static_file, "r", encoding="utf-8") as f:
+                xaphuong_data = json.load(f)
+            total_areas_from_json = len(xaphuong_data)  # 131 xã/phường
+        except Exception:
+            # Fallback nếu không đọc được file
+            total_areas_from_json = 131  # 35 + 40 + 56
+
+        total_areas = total_areas_from_json  # Tổng số xã/phường thực tế
+        surveyed_areas = len(surveys)  # Số xã/phường đã được khảo sát
+
+        # Danh sách dịch vụ
+        service_names = {
+            1: "Biên lai điện tử",
+            2: "Kiosk AI",
+            3: "Kiosk bắt số",
+            4: "Hội nghị trực tuyến",
+            5: "Hệ thống WiFi",
+            6: "Camera Hành chính công",
+            7: "Camera xã phường",
+            8: "Kênh truyền số liệu chuyên dụng",
+            9: "AI cho Công chức viên chức",
+            10: "Smart IR",
+            11: "Firewall S-Gate",
+            12: "VNPT-Money",
+        }
+
+        # Thống kê theo dịch vụ
+        service_stats = {}
+        for i in range(1, 13):
+            service_key = f"dich_vu_{i}"
+
+            # Đếm các trạng thái khác nhau
+            co_count = 0
+            khong_co_nhu_cau_count = 0
+            hop_dong_vnpt_count = 0
+            hop_dong_khac_count = 0
+
+            for survey in surveys.values():
+                status = survey.get(service_key, "")
+                raw_detail = survey.get("service_details", {}).get(service_key, status)
+
+                # Xử lý trạng thái đặc biệt cho dịch vụ 8 (Kênh TSL CD)
+                if i == 8:
+                    # Kiểm tra giá trị thực tế từ raw_detail (dropdown value)
+                    if status == "Có" or "kênh" in str(raw_detail).lower():
+                        co_count += 1
+                    elif status == "Không":
+                        # Phân tích lý do từ raw_detail nếu có
+                        raw_lower = str(raw_detail).lower()
+                        if (
+                            "ký hợp đồng với vnpt" in raw_lower
+                            or "đã ký hợp đồng với vnpt" in raw_lower
+                        ):
+                            hop_dong_vnpt_count += 1
+                        elif (
+                            "ký hợp đồng với nhà cung cấp khác" in raw_lower
+                            or "ký hợp đồng với đơn vị khác" in raw_lower
+                        ):
+                            hop_dong_khac_count += 1
+                        elif (
+                            "không có nhu cầu" in raw_lower
+                            or "chưa có nhu cầu" in raw_lower
+                        ):
+                            khong_co_nhu_cau_count += 1
+                        else:
+                            khong_co_nhu_cau_count += 1
+                    continue
+
+                # Xử lý trạng thái đặc biệt cho dịch vụ 7 (Camera xã phường)
+                if i == 7:
+                    if status == "Có":
+                        # Camera xã phường với "Có" có thể có hẹn lịch khảo sát
+                        co_count += 1
+                    elif status == "Không":
+                        # Phân tích lý do từ raw_detail
+                        raw_lower = str(raw_detail).lower()
+                        if (
+                            "ký hợp đồng với vnpt" in raw_lower
+                            or "đã ký hợp đồng với vnpt" in raw_lower
+                        ):
+                            hop_dong_vnpt_count += 1
+                        elif (
+                            "ký hợp đồng với nhà cung cấp khác" in raw_lower
+                            or "ký hợp đồng với đơn vị khác" in raw_lower
+                        ):
+                            hop_dong_khac_count += 1
+                        elif (
+                            "không có nhu cầu" in raw_lower
+                            or "chưa có nhu cầu" in raw_lower
+                        ):
+                            khong_co_nhu_cau_count += 1
+                        else:
+                            khong_co_nhu_cau_count += 1
+                    continue
+
+                # Xử lý các trạng thái thông thường
+                if status == "Có":
+                    co_count += 1
+                elif status == "Không":
+                    # Phân tích lý do từ raw_detail
+                    raw_lower = str(raw_detail).lower()
+                    if (
+                        "không có nhu cầu" in raw_lower
+                        or "chưa có nhu cầu" in raw_lower
+                        or raw_detail == "Không"
+                        or raw_detail == ""
+                    ):
+                        khong_co_nhu_cau_count += 1
+                    elif (
+                        "ký hợp đồng với vnpt" in raw_lower
+                        or "đã ký hợp đồng với vnpt" in raw_lower
+                    ):
+                        hop_dong_vnpt_count += 1
+                    elif (
+                        "ký hợp đồng với nhà cung cấp khác" in raw_lower
+                        or "ký hợp đồng với đơn vị khác" in raw_lower
+                        or "đã ký hợp đồng với nhà cung cấp khác" in raw_lower
+                    ):
+                        hop_dong_khac_count += 1
+                    else:
+                        khong_co_nhu_cau_count += 1
+                else:
+                    # Trường hợp không xác định, tính là chưa có nhu cầu
+                    khong_co_nhu_cau_count += 1
+
+            total_count = (
+                co_count
+                + khong_co_nhu_cau_count
+                + hop_dong_vnpt_count
+                + hop_dong_khac_count
+            )
+
+            service_stats[i] = {
+                "name": service_names[i],
+                "co": co_count,
+                "khong_co_nhu_cau": khong_co_nhu_cau_count,
+                "hop_dong_vnpt": hop_dong_vnpt_count,
+                "hop_dong_khac": hop_dong_khac_count,
+                "total": total_count,
+                # Giữ lại các field cũ để tương thích
+                "khong": khong_co_nhu_cau_count,
+            }
+
+            # Thống kê theo địa bàn - sử dụng lại dữ liệu đã đọc ở trên
+        if "xaphuong_data" in locals():
+            # Đếm tổng số xã/phường theo từng địa bàn
+            total_areas_by_diaban = {}
+            for item in xaphuong_data:
+                diaban = item.get("diaban", "Không xác định")
+                total_areas_by_diaban[diaban] = total_areas_by_diaban.get(diaban, 0) + 1
+        else:
+            # Fallback nếu không đọc được file
+            total_areas_by_diaban = {
+                "Vĩnh Long (cũ)": 35,
+                "Trà Vinh (cũ)": 40,
+                "Bến Tre (cũ)": 56,
+            }
+
+        diaban_stats = {}
+        for survey in surveys.values():
+            diaban = survey.get("diaban", "Không xác định")
+            if diaban not in diaban_stats:
+                diaban_stats[diaban] = {
+                    "surveyed_areas": 0,  # Số xã/phường đã khảo sát
+                    "total_areas": total_areas_by_diaban.get(
+                        diaban, 0
+                    ),  # Tổng số xã/phường trong địa bàn
+                }
+
+            diaban_stats[diaban]["surveyed_areas"] += 1
+
+        # Danh sách chi tiết từng xã/phường
+        area_details = []
+        for area_key, survey in surveys.items():
+            completed = sum(
+                1 for i in range(1, 13) if survey.get(f"dich_vu_{i}") == "Có"
+            )
+            completion_rate = (completed / 12) * 100 if completed > 0 else 0
+
+            area_details.append(
+                {
+                    "area_name": survey.get("xaphuong", area_key),
+                    "area_normalized": area_key,
+                    "diaban": survey.get("diaban", "Không xác định"),
+                    "completed_services": completed,
+                    "total_services": 12,
+                    "completion_rate": round(completion_rate, 1),
+                }
+            )
+
+        # Sắp xếp theo tỷ lệ hoàn thành giảm dần
+        area_details.sort(key=lambda x: x["completion_rate"], reverse=True)
+
+        payload = {
+            "success": True,
+            "overview": {
+                "total_areas": total_areas,
+                "surveyed_areas": surveyed_areas,
+                "completion_rate": (
+                    round((surveyed_areas / total_areas * 100), 1)
+                    if total_areas > 0
+                    else 0
+                ),
+            },
+            "service_stats": service_stats,
+            "diaban_stats": diaban_stats,
+            "area_details": area_details,
+            "last_update": datetime.now(timezone.utc).isoformat(),
+        }
+
+        return jsonify(payload)
+    except Exception as e:
+        return jsonify({"success": False, "message": f"Lỗi server: {e}"}), 500
+
+
 @api_bp.get("/health")
 def health_check():
     return jsonify({"status": "healthy", "message": "Server đang hoạt động bình thường", "offline_support": True})
