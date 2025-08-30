@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Khảo sát - Vĩnh Long</title>
+    <title>Dashboard Khảo sát nhu cầu sử dụng dịch vụ xã/phường - VNPT Vĩnh Long</title>
     <!-- PWA Meta Tags -->
     <meta name="description" content="Dashboard thống kê khảo sát dịch vụ cho Xã/Phường">
     <meta name="theme-color" content="#4f46e5">
@@ -156,8 +156,8 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center">
-                    <h1 class="text-xl font-bold text-gray-900">Dashboard Khảo sát</h1>
-                    <span class="ml-2 text-sm text-gray-500">Vĩnh Long</span>
+                    <h1 class="text-xl font-bold text-gray-900">Dashboard số liệu khảo sát</h1>
+                    <span class="ml-2 text-sm text-gray-500">Nhu cầu sử dụng dịch vụ</span>
                 </div>
                 <div class="flex items-center space-x-4">
                     <button onclick="window.open('/map', '_blank')" 
@@ -195,7 +195,7 @@
                         <div>
                             <p class="text-green-100 text-sm font-medium">Tổng xã/phường</p>
                             <p id="totalAreas" class="text-3xl font-bold">-</p>
-                            <p class="text-green-100 text-xs mt-1">Theo xaphuong.json</p>
+                            <p class="text-green-100 text-xs mt-1">Tỉnh Vĩnh Long (mới)</p>
                         </div>
                         <div class="p-3 bg-green-400 bg-opacity-30 rounded-full">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -226,7 +226,7 @@
                         <div>
                             <p class="text-pink-100 text-sm font-medium">Tỷ lệ khảo sát</p>
                             <p id="completionRate" class="text-3xl font-bold">-%</p>
-                            <p class="text-pink-100 text-xs mt-1">Đã khảo sát / 131 tổng</p>
+                            <p class="text-pink-100 text-xs mt-1">Đã khảo sát / 124 tổng</p>
                         </div>
                         <div class="p-3 bg-pink-400 bg-opacity-30 rounded-full">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -348,7 +348,7 @@
                         <div class="relative">
                             <input type="text" 
                                    id="searchInput" 
-                                   placeholder="Tìm kiếm xã/phường..." 
+                                   placeholder="Tìm kiếm xã/phường, địa bàn, người khảo sát..." 
                                    class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
                             <svg class="absolute left-3 top-2.5 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -425,13 +425,21 @@
                                 <th id="header-completion_rate" class="sort-header px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors" 
                                     onclick="sortTable('completion_rate')">
                                     <div class="flex items-center space-x-1">
-                                        <span>Tỷ lệ hoàn thành</span>
+                                        <span>Tỷ lệ sử dụng dịch vụ</span>
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
                                         </svg>
                                     </div>
                                 </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tiến độ</th>
+                                <th id="header-nhan_vien_khao_sat" class="sort-header px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors" 
+                                    onclick="sortTable('nhan_vien_khao_sat')">
+                                    <div class="flex items-center space-x-1">
+                                        <span>Người khảo sát</span>
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
+                                        </svg>
+                                    </div>
+                                </th>
                             </tr>
                         </thead>
                         <tbody id="areaTableBody" class="bg-white divide-y divide-gray-200">
@@ -834,12 +842,7 @@
                             ${area.completion_rate}%
                         </span>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="progress-bar h-2 rounded-full ${area.completion_rate >= 75 ? 'bg-green-500' : area.completion_rate >= 50 ? 'bg-yellow-500' : 'bg-red-500'}" 
-                                 style="width: ${area.completion_rate}%"></div>
-                        </div>
-                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${area.nhan_vien_khao_sat || '-'}</td>
                 `;
                 tbody.appendChild(row);
             });
@@ -882,7 +885,8 @@
                 // Search filter
                 const matchesSearch = searchTerm === '' || 
                     area.area_name.toLowerCase().includes(searchTerm) ||
-                    area.diaban.toLowerCase().includes(searchTerm);
+                    area.diaban.toLowerCase().includes(searchTerm) ||
+                    (area.nhan_vien_khao_sat || '').toLowerCase().includes(searchTerm);
                 
                 // Diaban filter
                 const matchesDiaban = selectedDiaban === '' || area.diaban === selectedDiaban;
@@ -1028,6 +1032,10 @@
                     case 'completion_rate':
                         valueA = a.completion_rate;
                         valueB = b.completion_rate;
+                        break;
+                    case 'nhan_vien_khao_sat':
+                        valueA = (a.nhan_vien_khao_sat || '').toLowerCase();
+                        valueB = (b.nhan_vien_khao_sat || '').toLowerCase();
                         break;
                     default:
                         return 0;

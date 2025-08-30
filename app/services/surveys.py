@@ -92,7 +92,12 @@ def generate_sample_survey_data():
             if normalize_area_name(item.get("xaphuong", "")) == norm:
                 diaban = item.get("diaban", diaban)
                 break
-        rec = {"xaphuong": raw, "xaphuong_normalized": norm, "diaban": diaban}
+        rec = {
+            "xaphuong": raw,
+            "xaphuong_normalized": norm,
+            "diaban": diaban,
+            "nhan_vien_khao_sat": f"NV{random.randint(1, 10)}",
+        }
         for i in range(1, 13):
             rec[f"dich_vu_{i}"] = random.choice(["Có", "Không", "Đang triển khai"])
         sample_data[norm] = rec
@@ -151,9 +156,8 @@ def get_survey_data_from_sheets():
                 "total_services": count_yes,
                 "service_details": service_raw,
                 "diaban": row[1] if len(row) > 1 else "",
+                "nhan_vien_khao_sat": row[2] if len(row) > 2 else "",
             }
         return out
     except Exception:
         return generate_sample_survey_data()
-
-

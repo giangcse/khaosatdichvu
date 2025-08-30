@@ -453,6 +453,7 @@ def dashboard_stats():
                     "completed_services": completed,
                     "total_services": 12,
                     "completion_rate": round(completion_rate, 1),
+                    "nhan_vien_khao_sat": survey.get("nhan_vien_khao_sat", ""),
                 }
             )
 
