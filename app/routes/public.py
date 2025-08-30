@@ -58,6 +58,12 @@ def serve_geojson():
     return send_from_directory(current_app.static_folder, "map.geojson")
 
 
+@public_bp.get("/xaphuong.json")
+def serve_xaphuong():
+    # xaphuong.json đã được chuyển vào app/static
+    return send_from_directory(current_app.static_folder, "xaphuong.json")
+
+
 # Backward-compatible non-prefixed submit route for index.html and SW
 @public_bp.post("/submit")
 def submit_compat():

@@ -452,10 +452,23 @@
         let currentSortField = '';
         let currentSortDirection = 'asc';
 
+        // Function to destroy all charts
+        function destroyAllCharts() {
+            Object.values(charts).forEach(chart => {
+                if (chart && typeof chart.destroy === 'function') {
+                    chart.destroy();
+                }
+            });
+            charts = {};
+        }
+
         // Load dashboard data
         async function loadDashboardData() {
             try {
                 showLoading(true);
+                // Destroy existing charts before loading new data
+                destroyAllCharts();
+                
                 const response = await fetch('/api/dashboard-stats');
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -515,6 +528,17 @@
 
         // Create all charts
         function createCharts() {
+            // Destroy existing charts before creating new ones
+            if (charts.serviceOverview) {
+                charts.serviceOverview.destroy();
+            }
+            if (charts.diaban) {
+                charts.diaban.destroy();
+            }
+            if (charts.serviceDetails) {
+                charts.serviceDetails.destroy();
+            }
+            
             createServiceOverviewChart();
             createDiabanChart();
             createServiceDetailsChart();
@@ -1028,6 +1052,8 @@
             refreshSpinner.classList.remove('hidden');
             
             try {
+                // Destroy all charts before refreshing
+                destroyAllCharts();
                 await loadDashboardData();
                 
                 // Show success message
@@ -1054,6 +1080,19 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadDashboardData();
         });
+
+        // Register service worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
 
         // Auto refresh every 5 minutes
         setInterval(() => {
